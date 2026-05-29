@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <!-- Configuracion de Playwright para los tests.
+       Docs: https://playwright.dev/dotnet/docs/test-runners -->
+  <Playwright>
+    <!-- Navegador a usar: chromium | firefox | webkit -->
+    <BrowserName>chromium</BrowserName>
+    <!-- Timeout global de operaciones de Playwright (ms) -->
+    <ExpectTimeout>5000</ExpectTimeout>
+    <LaunchOptions>
+      <!-- Poner en false para ver el navegador durante la ejecucion -->
+      <Headless>true</Headless>
+      <!-- Milisegundos de espera entre acciones (util para depurar) -->
+      <SlowMo>0</SlowMo>
+    </LaunchOptions>
+  </Playwright>
+
+  <RunConfiguration>
+    <!-- Cantidad de tests en paralelo. Ajustar segun la maquina. -->
+    <MaxCpuCount>1</MaxCpuCount>
+  </RunConfiguration>
+</RunSettings>

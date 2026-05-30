@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Playwright;
@@ -119,6 +120,35 @@ public abstract class LinkedInMutableLocationTestBase : LinkedInTestBase
 
     protected ILocator ObtenerCampoLocation() =>
         Page.GetByLabel(new Regex("location|ubicaci[oó]n|city|ciudad", RegexOptions.IgnoreCase)).First;
+
+    /// <summary>
+    /// Tras Save exitoso: valida reglas req/opcional y configura expectativa de persistencia
+    /// (entidad canónica CABA según PDF). TearDown verifica el valor persistido.
+    /// </summary>
+    protected void ConfigurarExpectativaTrasSave(
+        bool esRequerido,
+        bool guardadoExitoso,
+        IReadOnlyList<string> sugerenciasAlGuardar)
+    {
+        if (!guardadoExitoso)
+        {
+            return;
+        }
+
+        GuardadoAlteroPerfil = true;
+
+        var hayEntidadCanonica = AlgunaContiene(sugerenciasAlGuardar, EtiquetaCaba);
+
+        if (esRequerido)
+        {
+            Assert.That(hayEntidadCanonica, Is.True,
+                "BUG validación: Location REQUERIDO pero Save guardó sin entidad canónica " +
+                $"'{EtiquetaCaba}'. Sugerencias: {Evidencia(sugerenciasAlGuardar)}. Consultar antes de reportar.");
+        }
+
+        // Calidad de datos (PDF): debe persistir Autonomous City of Buenos Aires.
+        ValorEsperadoTrasSave = EtiquetaCaba;
+    }
 
     /// <summary>
     /// Compara dos valores de Location (input + texto visible del contenedor del campo).

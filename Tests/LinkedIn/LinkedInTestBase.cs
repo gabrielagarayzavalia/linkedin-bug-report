@@ -177,6 +177,25 @@ public abstract class LinkedInTestBase : PageTest
     }
 
     /// <summary>
+    /// Escribe <paramref name="query"/>, espera sugerencias, selecciona la primera (si hay)
+    /// y devuelve la lista de textos mostrados.
+    /// </summary>
+    protected async Task<IReadOnlyList<string>> EscribirYSeleccionarPrimeraSugerenciaAsync(
+        ILocator field, string query, string etiqueta)
+    {
+        var sugerencias = await ObtenerSugerenciasAsync(field, query, etiqueta);
+        var opciones = await ResolverOpcionesAsync(field);
+        if (await opciones.CountAsync() > 0)
+        {
+            await opciones.First.ClickAsync();
+            await Page.WaitForTimeoutAsync(500);
+            await CapturarAsync($"{etiqueta}-seleccionada");
+        }
+
+        return sugerencias;
+    }
+
+    /// <summary>
     /// Acota las opciones al listbox del typeahead de ubicación, evitando el ruido de
     /// los &lt;select&gt; nativos del formulario (meses, años, tipo de empleo, idiomas).
     /// </summary>

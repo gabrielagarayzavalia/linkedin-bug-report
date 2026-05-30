@@ -49,6 +49,7 @@ No correr suites completas salvo que el usuario lo pida explícitamente.
 | TC-PBA04 | `TC_PBA04_Lanus_EsProvincia` | PBA-Regression | PASS |
 | TC-N01..N06 | `TC_N01_*` … `TC_N06_*` | Negative | Consultar si falla |
 | TC-V01 | `TC_V01_SaveConLocationVacio_RespetaObligatoriedad` | Save-Validation | PASS (Location no requerido) |
+| TC-P01-Save | `TC_P01_Save_NombreCompleto_VerificarPersistido` | Save-Persistence | Consultar tras ejecutar |
 
 Documentación QA: `docs/TestCases_TestData_LinkedIn_CABA.pdf`, `docs/test-cases/negative-location.md`.
 

@@ -56,11 +56,16 @@ Documentación QA: `docs/TestCases_TestData_LinkedIn_CABA.pdf`, `docs/test-cases
 
 ### Assertion fallida → consultar, no alucinar
 
-Si un test **falla**:
+Si un test **falla** (o el resultado sorprende):
 
 1. **NO** reescribir assertions ni concluir solo que "la expectativa era estricta".
 2. **NO** reportar bug ni commitear cambios de interpretación sin confirmación del usuario.
-3. Presentar: dato de entrada, sugerencias/resultado observado, evidencia (PNG + trace), dos hipótesis (bug vs test), preguntar qué aplicar.
+3. Presentar: dato de entrada, sugerencias/resultado observado, evidencia (PNG + trace), dos hipótesis (bug vs test), **preguntar y esperar respuesta**.
+4. **NO** ejecutar el siguiente test case hasta que el usuario confirme cómo seguir.
+
+### Tras cada test case (pase o falle)
+
+Siempre **detenerse y preguntar al usuario** antes de continuar con otro TC, para evitar alucinaciones.
 
 ### Perfil LinkedIn (tests que mutan Location)
 
@@ -112,9 +117,13 @@ Evidencia versionada del bug: `docs/bugs/caba-location-typeahead/evidence/`.
 1. Confirmar con el usuario **qué TC** ejecutar (o seguir orden del PDF).
 2. Ejecutar **solo ese** test con `--filter "Name=..."`.
 3. Revisar log `[SUGERENCIAS]`, screenshots y trace.
-4. Si pasa/falla según expectativa: registrar resultado; commit solo si hubo cambios de código/docs.
-5. Si falla inesperado: **consultar** al usuario antes de actuar.
-6. Pasar al siguiente TC cuando el usuario diga "siguiente" o indique el ID.
+4. **Detenerse y preguntar al usuario** antes de continuar:
+   - ¿El resultado coincide con lo que observás / documentaste?
+   - ¿Es bug, assertion a ajustar, o seguimos al siguiente TC?
+   - **No** inferir ni pasar al siguiente caso sin confirmación explícita.
+5. Si pasa/falla según expectativa y el usuario confirma: registrar; commit solo si hubo cambios de código/docs.
+6. Si falla inesperado: presentar evidencia + dos hipótesis; **esperar respuesta** antes de actuar.
+7. Pasar al siguiente TC **solo** cuando el usuario lo indique.
 
 ## Pendientes conocidos (consultar con usuario)
 

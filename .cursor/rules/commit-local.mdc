@@ -1,0 +1,16 @@
+---
+description: Hacer commits locales automaticamente; nunca pushear sin permiso explicito
+alwaysApply: true
+---
+
+# Commits locales por defecto
+
+- Después de completar un cambio significativo (feature, fix, refactor o docs),
+  creá un **commit local automáticamente**, sin pedir confirmación cada vez.
+- Agrupá cambios coherentes en un mismo commit. Mensajes claros, en español,
+  enfocados en el "por qué" del cambio.
+- **NUNCA** hagas `git push` ni publiques a un remoto, salvo que se pida explícitamente.
+- Nunca commitees secretos (`.env`, `Auth/state.json`, credenciales, tokens).
+  Verificá que estén en `.gitignore` antes de commitear.
+- No uses `git commit --amend` sobre commits ya pusheados.
+- Si no hay cambios, no crees commits vacíos.

@@ -1,0 +1,37 @@
+---
+description: Vincular cada caso de prueba (TC) con su archivo .md en docs/test-cases/cases/
+alwaysApply: true
+---
+
+# Documentación por caso de prueba (TC)
+
+## Regla
+
+- **Cada TC** debe tener un archivo `.md` relacionado en `docs/test-cases/cases/`.
+- **Índice maestro:** `docs/test-cases/INDEX.md` (TC → archivo → método C# → categoría).
+- **Plantilla:** `docs/test-cases/_TEMPLATE.md` (usar al crear casos nuevos).
+
+## Al ejecutar, crear o modificar un test
+
+1. **Consultar** `docs/test-cases/INDEX.md` para ubicar el `.md` del TC.
+2. **Leer** ese archivo antes de correr el test (contexto, pasos, expectativa).
+3. **Tras ejecutar:** actualizar en el `.md` el **Resultado actual**, **Estado** y ruta de **evidencia** (baseline/trace).
+4. Si el TC **no tiene** `.md` todavía, crearlo desde `_TEMPLATE.md` y agregarlo al INDEX.
+5. **No alucinar** resultados: solo documentar lo observado en la corrida o en baseline.
+
+## Convención de nombres
+
+| Tipo | Archivo | Ejemplo |
+|------|---------|---------|
+| Caso del PDF | `cases/TC-P01.md` | Positivo CABA |
+| Variante Save | `cases/TC-P01-Save.md` | Mismo TC + Save + persistencia |
+| Negativo | `cases/TC-N01.md` | Un archivo por TC-N* |
+| Validación | `cases/TC-V01.md` | Save vacío req/opcional |
+
+## Campos mínimos del .md (para futuro template)
+
+Ver `_TEMPLATE.md`: ID, título, clasificación, módulo, precondiciones, pasos, esperado, actual, estado, método automatizado, categoría NUnit, evidencia, notas.
+
+## Commits
+
+Commit local al agregar/actualizar docs de casos junto con cambios de test relacionados.

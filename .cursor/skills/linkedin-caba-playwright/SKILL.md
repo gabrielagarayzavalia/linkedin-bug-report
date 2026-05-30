@@ -51,7 +51,15 @@ No correr suites completas salvo que el usuario lo pida explícitamente.
 | TC-V01 | `TC_V01_SaveConLocationVacio_RespetaObligatoriedad` | Save-Validation | PASS (Location no requerido) |
 | TC-P01-Save | `TC_P01_Save_NombreCompleto_VerificarPersistido` | Save-Persistence | Consultar tras ejecutar |
 
-Documentación QA: `docs/TestCases_TestData_LinkedIn_CABA.pdf`, `docs/test-cases/negative-location.md`.
+Documentación QA: `docs/TestCases_TestData_LinkedIn_CABA.pdf`, `docs/test-cases/INDEX.md`.
+
+## Documentación por TC (obligatorio)
+
+- **Índice:** `docs/test-cases/INDEX.md` → TC → archivo `.md` → método C#.
+- **Plantilla:** `docs/test-cases/_TEMPLATE.md` (base para generar templates).
+- **Por caso:** `docs/test-cases/cases/TC-*.md`.
+
+Antes de ejecutar un TC: **leer** su `.md`. Después: **actualizar** Resultado actual, Estado y Evidencia. Si no existe el `.md`, crearlo desde la plantilla y registrar en INDEX.
 
 ## Políticas obligatorias
 

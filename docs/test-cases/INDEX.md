@@ -28,6 +28,7 @@ Cada TC tiene un `.md` en `cases/`. Plantilla: `_TEMPLATE.md`.
 
 - [negative-location.md](negative-location.md) — resumen TC-N01..N06
 - [save-persistence.md](save-persistence.md) — patrón TC-*-Save
+- [../todo/BACKLOG.md](../todo/BACKLOG.md) — to-do post casos establecidos (datos, locale/idioma)
 
 ## Regla para el agente
 

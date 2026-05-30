@@ -138,3 +138,4 @@ Evidencia versionada del bug: `docs/bugs/caba-location-typeahead/evidence/`.
 
 - **TC-N01**, **TC-N05**: fallaron en corrida inicial; requieren confirmación de hipótesis antes de ajustar assertions o reportar bug.
 - **Reporte de riesgos R01–R15**: no iniciar hasta que el usuario lo pida.
+- **Post casos establecidos:** recordar `docs/todo/BACKLOG.md` — set de datos + pruebas locale/idioma (EN y ES primero; resto opcional).

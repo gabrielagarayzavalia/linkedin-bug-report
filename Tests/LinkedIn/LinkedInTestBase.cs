@@ -209,4 +209,121 @@ public abstract class LinkedInTestBase : PageTest
         var lista = sugerencias.ToList();
         return lista.Count == 0 ? "(sin sugerencias)" : string.Join(" | ", lista);
     }
+
+    /// <summary>Botón Save del modal "Edit experience".</summary>
+    protected ILocator BotonSave =>
+        Page.GetByRole(AriaRole.Button, new() { Name = "Save" })
+            .Or(Page.GetByRole(AriaRole.Button, new() { Name = "Guardar" }));
+
+    /// <summary>Encabezado del modal de edición de experiencia (indica que sigue abierto).</summary>
+    protected ILocator ModalEditExperience =>
+        Page.GetByRole(AriaRole.Heading, new() { Name = "Edit experience" })
+            .Or(Page.GetByRole(AriaRole.Heading, new() { Name = "Editar experiencia" }));
+
+    /// <summary>
+    /// Indica si LinkedIn marca el campo Location como obligatorio (* en label, required o aria-required).
+    /// </summary>
+    protected static async Task<bool> LocationEsRequeridoAsync(ILocator field)
+    {
+        var ariaRequired = await field.GetAttributeAsync("aria-required");
+        if (string.Equals(ariaRequired, "true", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var htmlRequired = await field.GetAttributeAsync("required");
+        if (htmlRequired != null)
+        {
+            return true;
+        }
+
+        return await field.EvaluateAsync<bool>(
+            """
+            el => {
+                const id = el.id;
+                let label = id ? document.querySelector(`label[for="${CSS.escape(id)}"]`) : null;
+                if (!label) label = el.closest('label');
+                if (!label) {
+                    const labelledBy = el.getAttribute('aria-labelledby');
+                    if (labelledBy) {
+                        label = document.getElementById(labelledBy.split(' ')[0]);
+                    }
+                }
+                const text = label?.textContent ?? '';
+                return text.includes('*');
+            }
+            """);
+    }
+
+    /// <summary>Deja el campo Location vacío (input + valor seleccionado visible).</summary>
+    protected static async Task LimpiarLocationAsync(ILocator field)
+    {
+        await field.ClickAsync();
+        await field.PressAsync("Control+A");
+        await field.PressAsync("Backspace");
+        await field.FillAsync(string.Empty);
+        await field.PressAsync("Backspace");
+    }
+
+    /// <summary>Lee el valor visible del input Location.</summary>
+    protected static Task<string> LeerLocationAsync(ILocator field) => field.InputValueAsync();
+
+    /// <summary>
+    /// Pulsa Save y devuelve si el guardado parece haberse completado (modal cerrado).
+    /// </summary>
+    protected async Task<bool> IntentarGuardarAsync()
+    {
+        await BotonSave.ScrollIntoViewIfNeededAsync();
+        await BotonSave.ClickAsync();
+        await Page.WaitForTimeoutAsync(4000);
+        return !await ModalSigueAbiertoAsync();
+    }
+
+    /// <summary>True si el modal "Edit experience" sigue visible.</summary>
+    protected async Task<bool> ModalSigueAbiertoAsync() =>
+        await ModalEditExperience.IsVisibleAsync();
+
+    /// <summary>
+    /// True si hay mensaje de validación visible cerca del campo Location
+    /// (error inline, aria-invalid o texto de campo requerido).
+    /// </summary>
+    protected async Task<bool> HayErrorValidacionLocationAsync(ILocator field)
+    {
+        if (string.Equals(await field.GetAttributeAsync("aria-invalid"), "true", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var errorCerca = Page.Locator(
+            "[role='alert'], .artdeco-inline-feedback--error, [data-test-inline-feedback='error']");
+        if (await errorCerca.CountAsync() > 0 && await errorCerca.First.IsVisibleAsync())
+        {
+            return true;
+        }
+
+        var textoError = Page.Locator("text=/required|obligatorio|please enter|please select|campo requerido/i");
+        return await textoError.CountAsync() > 0 && await textoError.First.IsVisibleAsync();
+    }
+
+    /// <summary>Restaura Location y guarda, para revertir un Save que alteró el perfil.</summary>
+    protected async Task RestaurarLocationAsync(ILocator field, string valorOriginal)
+    {
+        if (string.IsNullOrWhiteSpace(valorOriginal))
+        {
+            return;
+        }
+
+        await field.ClickAsync();
+        await field.FillAsync(string.Empty);
+        await field.PressSequentiallyAsync(valorOriginal, new LocatorPressSequentiallyOptions { Delay = 60 });
+        await Page.WaitForTimeoutAsync(2000);
+
+        var opciones = await ResolverOpcionesAsync(field);
+        if (await opciones.CountAsync() > 0)
+        {
+            await opciones.First.ClickAsync();
+        }
+
+        await IntentarGuardarAsync();
+    }
 }

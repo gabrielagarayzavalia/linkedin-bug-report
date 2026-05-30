@@ -126,13 +126,11 @@ Evidencia versionada del bug: `docs/bugs/caba-location-typeahead/evidence/`.
 1. Confirmar con el usuario **qué TC** ejecutar (o seguir orden del PDF).
 2. Ejecutar **solo ese** test con `--filter "Name=..."`.
 3. Revisar log `[SUGERENCIAS]`, screenshots y trace.
-4. **Detenerse y preguntar al usuario** antes de continuar:
-   - ¿El resultado coincide con lo que observás / documentaste?
-   - ¿Es bug, assertion a ajustar, o seguimos al siguiente TC?
-   - **No** inferir ni pasar al siguiente caso sin confirmación explícita.
-5. Si pasa/falla según expectativa y el usuario confirma: registrar; commit solo si hubo cambios de código/docs.
-6. Si falla inesperado: presentar evidencia + dos hipótesis; **esperar respuesta** antes de actuar.
-7. Pasar al siguiente TC **solo** cuando el usuario lo indique.
+4. **Detenerse y preguntar al usuario** antes de continuar (sin repasar todo el proyecto).
+5. **Alcance mínimo por TC:** solo ejecutar test → actualizar `cases/TC-*.md` del caso → resultado breve → preguntar. **No** revisar el repo entero, skill, backlog ni otros archivos salvo que el usuario lo pida.
+6. Si pasa/falla según expectativa y el usuario confirma: registrar; commit **solo** del `.md` del caso (si hubo ejecución).
+7. Si falla inesperado: presentar evidencia + dos hipótesis; **esperar respuesta** antes de actuar.
+8. Pasar al siguiente TC **solo** cuando el usuario lo indique.
 
 ## Pendientes conocidos (consultar con usuario)
 

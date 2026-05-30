@@ -265,8 +265,35 @@ public abstract class LinkedInTestBase : PageTest
         await field.PressAsync("Backspace");
     }
 
-    /// <summary>Lee el valor visible del input Location.</summary>
+    /// <summary>Lee el valor del input Location.</summary>
     protected static Task<string> LeerLocationAsync(ILocator field) => field.InputValueAsync();
+
+    /// <summary>
+    /// Lee Location completo: input + texto visible en el contenedor del campo
+    /// (LinkedIn a veces muestra la ubicación persistida fuera del input).
+    /// </summary>
+    protected static async Task<string> LeerLocationCompletoAsync(ILocator field)
+    {
+        var input = (await field.InputValueAsync()).Trim();
+        if (!string.IsNullOrWhiteSpace(input))
+        {
+            return input;
+        }
+
+        var display = await field.EvaluateAsync<string>(
+            """
+            el => {
+                const root = el.closest('.artdeco-form-element, fieldset, [class*="location"]')
+                          || el.parentElement?.parentElement;
+                if (!root) return '';
+                const clone = root.cloneNode(true);
+                clone.querySelectorAll('input, button, select, textarea, label').forEach(n => n.remove());
+                return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+            }
+            """);
+
+        return display.Trim();
+    }
 
     /// <summary>
     /// Pulsa Save y devuelve si el guardado parece haberse completado (modal cerrado).
@@ -310,6 +337,8 @@ public abstract class LinkedInTestBase : PageTest
     {
         if (string.IsNullOrWhiteSpace(valorOriginal))
         {
+            await LimpiarLocationAsync(field);
+            await IntentarGuardarAsync();
             return;
         }
 

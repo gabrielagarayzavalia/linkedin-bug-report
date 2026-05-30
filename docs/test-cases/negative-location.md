@@ -32,8 +32,15 @@ Automatizado en `Tests/LinkedIn/LocationSaveValidationTest.cs` (categoría `Save
 dotnet test --filter "TestCategory=Save-Validation" --settings .runsettings
 ```
 
-> Si la assertion falla: tratar como posible bug y **consultar** antes de reportar (política QA).
 > El test intenta **restaurar** el valor original de Location si el Save alteró el perfil.
+
+### Ciclo de vida del perfil (cada test)
+
+1. **SetUp**: captura `LocationAlInicioDelTest` (screenshot `location-al-inicio-del-test`).
+2. **Tras Save exitoso**: **TearDown** reabre el formulario y verifica que el valor **persistido** coincide con lo guardado (`valor-persistido-antes-de-restaurar`).
+3. **TearDown**: siempre restaura el valor del paso 1 y confirma que quedó aplicado.
+
+Clase base: `LinkedInMutableLocationTestBase` (reutilizable en otros tests que muten Location).
 
 ## Ejecución
 

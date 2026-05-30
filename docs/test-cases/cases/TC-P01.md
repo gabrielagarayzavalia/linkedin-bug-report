@@ -48,8 +48,10 @@ Sugerencia canónica **`Autonomous City of Buenos Aires, Argentina`**, independi
 
 | Campo | Valor |
 |-------|-------|
-| **Estado** | ⬜ Pendiente ejecución en esta sesión |
-| **Evidencia** | — |
+| **Última ejecución** | 2026-05-30 |
+| **Observado** | 10 sugerencias; **ninguna** con `Autonomous City of Buenos Aires`. Aparecen: Cabarrus County (EE.UU.), Cabanatuan/Caba/Cabadbaran (Filipinas), Cabarita (Australia), Santiago de los Caballeros (Rep. Dom.), Cabariot (Francia), etc. |
+| **Estado** | ❌ FAIL |
+| **Evidencia** | `TestResults/baseline/TC_P01_Sigla_CABA_DebeMapearACABA/` |
 
 ## Variante Save
 

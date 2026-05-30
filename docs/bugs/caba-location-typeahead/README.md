@@ -60,6 +60,31 @@ Formulario "Edit experience" cargado:
 
 ![Sugerencias sigla CABA](evidence/05-sugerencias-sigla-caba.png)
 
+## Suite de regresión ejecutable
+
+Los casos del documento de QA están automatizados como tests asertivos:
+
+- `Tests/LinkedIn/CabaLocationBugTest.cs` — categoría `CABA-Bug`. Afirma el
+  comportamiento esperado (CABA como entidad). **Hoy FALLA** (evidencia del bug);
+  pasará a verde cuando LinkedIn lo corrija.
+- `Tests/LinkedIn/PbaLocationRegressionTest.cs` — categoría `PBA-Regression`.
+  Verifica que las localidades de PBA siguen bien clasificadas. **Hoy PASA**;
+  es la red de seguridad para validar que un futuro fix no rompa PBA.
+
+Estado actual de la corrida (en vivo): **6 FAIL (CABA) / 5 PASS (PBA)**.
+
+```bash
+# Solo el bug de CABA (esperado: rojo)
+dotnet test --filter "TestCategory=CABA-Bug" --settings .runsettings
+
+# Solo regresión PBA (esperado: verde)
+dotnet test --filter "TestCategory=PBA-Regression" --settings .runsettings
+```
+
+> Nota de implementación: el typeahead muestra la Provincia como
+> **"Buenos Aires Province"** (no "Province of Buenos Aires", que es la traducción
+> usada en el documento de QA).
+
 ## Cómo regenerar este baseline
 
 ```bash

@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
@@ -104,5 +107,106 @@ public abstract class LinkedInTestBase : PageTest
         }
 
         return value.Replace(' ', '_');
+    }
+
+    // ---------------------------------------------------------------------
+    // Helpers de dominio: formulario de experiencia y campo "Location".
+    // ---------------------------------------------------------------------
+
+    /// <summary>Formulario de experiencia donde se reproduce el bug de ubicación.</summary>
+    protected const string PositionFormUrl =
+        "https://www.linkedin.com/in/gabriela-garayzavalia/edit/forms/position/1864390597/";
+
+    /// <summary>
+    /// Etiquetas (en inglés) tal cual las muestra el typeahead de LinkedIn.
+    /// OJO: la Provincia aparece como "Buenos Aires Province", NO "Province of Buenos Aires".
+    /// CABA hoy no existe como entidad; la etiqueta esperada sigue la convención de LinkedIn.
+    /// </summary>
+    protected const string EtiquetaCaba = "Autonomous City of Buenos Aires";
+    protected const string EtiquetaPba = "Buenos Aires Province";
+
+    /// <summary>
+    /// Abre el formulario de experiencia y devuelve el locator del campo "Location".
+    /// </summary>
+    protected async Task<ILocator> AbrirFormularioLocationAsync()
+    {
+        await Page.GotoAsync(PositionFormUrl, new PageGotoOptions
+        {
+            WaitUntil = WaitUntilState.DOMContentLoaded,
+            Timeout = 45000,
+        });
+
+        // El formulario carga via JS; esperamos un momento (el feed nunca llega a NetworkIdle).
+        await Page.WaitForTimeoutAsync(4000);
+
+        var field = Page
+            .GetByLabel(new Regex("location|ubicaci[oó]n|city|ciudad", RegexOptions.IgnoreCase))
+            .First;
+        await field.ScrollIntoViewIfNeededAsync();
+        return field;
+    }
+
+    /// <summary>
+    /// Escribe <paramref name="query"/> en el campo de ubicación, espera la respuesta
+    /// del typeahead, captura un screenshot y devuelve el texto de cada sugerencia.
+    /// </summary>
+    protected async Task<IReadOnlyList<string>> ObtenerSugerenciasAsync(
+        ILocator field, string query, string etiqueta)
+    {
+        await field.ClickAsync();
+        await field.FillAsync(string.Empty);
+        await field.PressSequentiallyAsync(query, new LocatorPressSequentiallyOptions { Delay = 80 });
+
+        // Damos tiempo a que llegue la respuesta de la API de typeahead.
+        await Page.WaitForTimeoutAsync(2500);
+        await CapturarAsync(etiqueta);
+
+        var opciones = await ResolverOpcionesAsync(field);
+        var total = await opciones.CountAsync();
+        var sugerencias = new List<string>(total);
+
+        TestContext.Progress.WriteLine($"[SUGERENCIAS] '{query}' -> {total} resultados:");
+        for (var i = 0; i < total; i++)
+        {
+            var texto = (await opciones.Nth(i).InnerTextAsync()).Replace("\n", " ").Trim();
+            sugerencias.Add(texto);
+            TestContext.Progress.WriteLine($"    - {texto}");
+        }
+
+        return sugerencias;
+    }
+
+    /// <summary>
+    /// Acota las opciones al listbox del typeahead de ubicación, evitando el ruido de
+    /// los &lt;select&gt; nativos del formulario (meses, años, tipo de empleo, idiomas).
+    /// </summary>
+    private async Task<ILocator> ResolverOpcionesAsync(ILocator field)
+    {
+        // 1) Preferimos el listbox que el combobox referencia explícitamente.
+        var listId = await field.GetAttributeAsync("aria-owns")
+                     ?? await field.GetAttributeAsync("aria-controls");
+        if (!string.IsNullOrWhiteSpace(listId))
+        {
+            var firstId = listId.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+            var byId = Page.Locator($"[id='{firstId}'] [role='option']");
+            if (await byId.CountAsync() > 0)
+            {
+                return byId;
+            }
+        }
+
+        // 2) Fallback: listbox ARIA visible (los <select> nativos no generan [role=listbox]).
+        return Page.Locator("[role='listbox']:visible [role='option']");
+    }
+
+    /// <summary>True si alguna sugerencia contiene TODOS los fragmentos indicados (case-insensitive).</summary>
+    protected static bool AlgunaContiene(IEnumerable<string> sugerencias, params string[] fragmentos) =>
+        sugerencias.Any(s => fragmentos.All(f => s.Contains(f, StringComparison.OrdinalIgnoreCase)));
+
+    /// <summary>Une las sugerencias en una sola línea para los mensajes de error.</summary>
+    protected static string Evidencia(IEnumerable<string> sugerencias)
+    {
+        var lista = sugerencias.ToList();
+        return lista.Count == 0 ? "(sin sugerencias)" : string.Join(" | ", lista);
     }
 }

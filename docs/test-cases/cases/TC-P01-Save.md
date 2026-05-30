@@ -43,10 +43,17 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Última ejecución** | ⬜ Pendiente |
-| **Observado** | — |
-| **Estado** | ⬜ Pendiente |
+| **Última ejecución** | 2026-05-30 |
+| **Observado** | Save **exitoso** (`guardadoExitoso=True`). Location **no requerido**. Persistido: `Ciudad Autónoma de Buenos Aires` (texto libre, **sin** `Autonomous City of Buenos Aires`) |
+| **Estado** | ❌ FAIL (datos) — validación OK (opcional permitió guardar) |
 | **Evidencia** | `TestResults/baseline/TC_P01_Save_NombreCompleto_VerificarPersistido/` |
+| **Restauración** | ⚠️ TearDown falló en verificación; **puede no haberse restaurado** `CABA, Argentina` |
+
+## Historial de ejecuciones
+
+| Fecha | Resultado | Notas |
+|-------|-----------|-------|
+| 2026-05-30 | ❌ FAIL datos | Persistió texto libre en español, no entidad canónica |
 
 ## Reglas de negocio
 

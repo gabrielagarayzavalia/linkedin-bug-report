@@ -1,13 +1,10 @@
-# TC-L03 — Avellaneda PBA
-
-> Stub generado desde `_TEMPLATE.md`. Completar tras ejecutar.
+# TC-L03 — Avellaneda (GBA limítrofe con CABA)
 
 | Campo | Valor |
 |-------|-------|
 | **Método C#** | `TC_L03_Avellaneda_EsProvincia` |
-| **Archivo test** | `Tests/LinkedIn/PbaLocationRegressionTest.cs` |
 | **Categoría** | `PBA-Regression` |
-| **Estado** | ⬜ Pendiente |
+| **Esperado** | `Avellaneda, Buenos Aires Province, Argentina` |
+| **Última ejecución** | 2026-05-30 |
+| **Estado** | ✅ PASS (19 s) |
 | **Evidencia** | `TestResults/baseline/TC_L03_Avellaneda_EsProvincia/` |
-
-Ver PDF: `docs/TestCases_TestData_LinkedIn_CABA.pdf` (si aplica).

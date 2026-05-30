@@ -35,11 +35,24 @@
 
 ---
 
-## 3. Recordatorio para el agente
+## 3. Restaurar perfil (Location)
+
+Contexto: tests que mutan Location (`LinkedInMutableLocationTestBase`, TC-*-Save) deben dejar el perfil como al inicio. En **TC-P01-Save** el TearDown falló en la verificación de persistencia y **puede no haberse restaurado** `CABA, Argentina`.
+
+- [ ] Asegurar que **restaurar perfil siempre corre**, incluso si falla la assertion de persistencia (p. ej. `try/finally` en TearDown).
+- [ ] Script o test `[Explicit]` de **restauración manual** (`tools/restore-location.ps1` o similar) para recuperar el valor baseline del formulario de experiencia.
+- [ ] Documentar valor baseline esperado del perfil de prueba (Location en position 1864390597).
+- [ ] Verificar tras cada corrida Save-Persistence que el perfil quedó en el estado original.
+
+**Prioridad:** alta si hay tests Save pendientes; evita dejar datos incorrectos en el perfil real.
+
+---
+
+## 4. Recordatorio para el agente
 
 Cuando el usuario indique que **terminó la revisión de casos establecidos**, preguntar:
 
-> «¿Retomamos el to-do de **set de datos** y **locale/idioma (EN + ES)**?»
+> «¿Retomamos el to-do de **set de datos**, **locale/idioma (EN + ES)** y **restaurar perfil**?»
 
 ---
 
@@ -49,4 +62,5 @@ Cuando el usuario indique que **terminó la revisión de casos establecidos**, p
 |------|-----------|--------|
 | Set de datos | Media | Después de casos establecidos |
 | Locale / idioma (EN, ES) | Media | Después de casos establecidos |
+| **Restaurar perfil** | **Alta** | Post casos Save; o antes si perfil quedó alterado |
 | Locale / idioma (otros) | Baja | Opcional, más adelante |

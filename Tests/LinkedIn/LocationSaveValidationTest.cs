@@ -41,7 +41,13 @@ public class LocationSaveValidationTest : LinkedInMutableLocationTestBase
 
         GuardadoAlteroPerfil = await IntentarGuardarAsync();
         var modalAbierto = await ModalSigueAbiertoAsync();
-        var hayError = await HayErrorValidacionLocationAsync(field);
+
+        // Tras Save exitoso el modal se cierra: no consultar el campo (el locator queda stale).
+        var hayError = false;
+        if (modalAbierto)
+        {
+            hayError = await HayErrorValidacionLocationAsync(ObtenerCampoLocation());
+        }
 
         await CapturarAsync("despues-de-save");
 

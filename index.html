@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte de Bug — LinkedIn CABA vs PBA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #FFFFFF;
+    --blue: #CC0000;
+    --blue-light: #E30613;
+    --gold: #CC0000;
+    --gold-light: #CC0000;
+    --cream: #111111;
+    --white: #111111;
+    --gray: #6B7280;
+    --red: #990000;
+    --red-light: #FFD5D5;
+    --orange: #CC4400;
+    --orange-light: #FFE0CC;
+    --green: #1E8449;
+    --green-light: #D5F5E3;
+    --critical: #660000;
+    --critical-light: #FF9999;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ── PROTECCIONES ── */
+  * {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+  }
+  img { -webkit-user-drag: none; pointer-events: none; }
+
+  body {
+    background-color: #FFFFFF;
+    color: #111111;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── WATERMARK ── */
+  body::before {
+    content: "CONFIDENCIAL · SOLO LECTURA · CONFIDENCIAL · SOLO LECTURA · CONFIDENCIAL · SOLO LECTURA · ";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.045);
+    font-weight: 600;
+    transform: rotate(-35deg);
+    word-break: break-all;
+    line-height: 3.5;
+    pointer-events: none;
+    z-index: 9999;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    white-space: pre-wrap;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: #FFFFFF;
+    border-bottom: 2px solid #CC0000;
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(204,0,0,0.07);
+    border: 1px solid rgba(204,0,0,0.4);
+    color: #CC0000;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+  }
+
+  .header-badge::before { content: '🔒'; font-size: 10px; }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: #111111;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  header h1 span { color: #CC0000; font-style: italic; }
+
+  .header-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 32px;
+  }
+
+  .header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #CC0000;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .meta-value {
+    font-size: 13px;
+    color: #111111;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 64px;
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .section:nth-child(1) { animation-delay: 0.1s; }
+  .section:nth-child(2) { animation-delay: 0.2s; }
+  .section:nth-child(3) { animation-delay: 0.3s; }
+  .section:nth-child(4) { animation-delay: 0.4s; }
+  .section:nth-child(5) { animation-delay: 0.5s; }
+  .section:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: #111111;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title .num {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #CC0000;
+    font-weight: 600;
+    border: 1px solid rgba(204,0,0,0.4);
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .section-subtitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: #CC0000;
+    margin: 28px 0 12px;
+    font-style: italic;
+  }
+
+  p { color: #222222; margin-bottom: 14px; font-size: 15px; }
+
+  /* ── BULLETS ── */
+  ul { list-style: none; margin: 12px 0 20px; }
+  ul li {
+    color: #333333;
+    font-size: 14px;
+    padding: 7px 0 7px 20px;
+    position: relative;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  ul li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: #CC0000;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: rgba(204,0,0,0.05);
+    border-left: 3px solid var(--blue-light);
+    padding: 18px 20px;
+    border-radius: 0 6px 6px 0;
+    margin: 20px 0;
+  }
+
+  .callout.warning {
+    background: rgba(192,57,43,0.1);
+    border-left-color: var(--red);
+  }
+
+  .callout.gold {
+    background: rgba(0,0,0,0.04);
+    border-left-color: #CC0000;
+  }
+
+  .callout p { margin: 0; font-size: 14px; }
+  .callout-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .callout.warning .callout-label { color: var(--red); }
+  .callout.gold .callout-label { color: #CC0000; }
+  .callout .callout-label { color: #CC0000; }
+
+  /* ── TESTIMONY ── */
+  .testimony {
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .testimony::before {
+    content: '"';
+    font-family: 'DM Serif Display', serif;
+    font-size: 80px;
+    color: rgba(255,255,255,0.15);
+    position: absolute;
+    top: -10px; left: 16px;
+    line-height: 1;
+  }
+  .testimony p {
+    font-style: italic;
+    color: #111111;
+    font-size: 15px;
+    padding-left: 8px;
+  }
+  .testimony-author {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #CC0000;
+    font-weight: 600;
+    margin-top: 12px;
+    padding-left: 8px;
+  }
+
+  /* ── RISK TABLE ── */
+  .risk-table-wrap {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+    margin: 20px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--blue);
+  }
+
+  thead th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    transition: background 0.2s;
+  }
+
+  tbody tr:hover { background: rgba(204,0,0,0.06); }
+
+  tbody td {
+    padding: 11px 14px;
+    color: #333333;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .td-id { font-weight: 600; color: #CC0000; white-space: nowrap; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .badge-critico { background: var(--critical-light); color: var(--critical); }
+  .badge-alto    { background: var(--red-light);      color: var(--red); }
+  .badge-medio   { background: var(--orange-light);   color: var(--orange); }
+  .badge-bajo    { background: var(--green-light);    color: var(--green); }
+  .badge-premium { background: rgba(204,0,0,0.07); color: #CC0000; border: 1px solid rgba(0,0,0,0.2); }
+  .badge-free    { background: rgba(204,0,0,0.2);   color: #7EB8F7; border: 1px solid rgba(204,0,0,0.4); }
+  .badge-todos   { background: rgba(0,0,0,0.05); color: #444444; }
+
+  /* ── VERSION BOX ── */
+  .version-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 0;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+
+  .version-label {
+    background: rgba(204,0,0,0.2);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #CC0000;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .version-label.new { background: rgba(0,0,0,0.04); color: #CC0000; }
+  .version-content { padding: 16px; font-size: 14px; color: #333333; }
+
+  /* ── DIFF CARDS ── */
+  .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+
+  .diff-card {
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .diff-card.caba { border-top: 3px solid var(--white); }
+  .diff-card.pba  { border-top: 3px solid var(--blue); }
+
+  .diff-card h4 {
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .diff-card.caba h4 { color: #CC0000; }
+  .diff-card.pba  h4 { color: #CC0000; }
+
+  .diff-card p { font-size: 13px; margin: 0; }
+
+  /* ── SUBSCRIPTION BOX ── */
+  .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+
+  .sub-card {
+    border-radius: 8px;
+    padding: 20px 22px;
+    border: 1px solid;
+  }
+
+  .sub-card.mensual {
+    background: rgba(192,57,43,0.05);
+    border-color: rgba(192,57,43,0.3);
+  }
+
+  .sub-card.anual {
+    background: rgba(211,84,0,0.05);
+    border-color: rgba(211,84,0,0.3);
+  }
+
+  .sub-card h4 {
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .sub-card.mensual h4 { color: var(--red); }
+  .sub-card.anual  h4 { color: var(--orange); }
+
+  .sub-sev {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .sub-card.mensual .sub-sev { color: var(--critical); }
+  .sub-card.anual   .sub-sev { color: var(--orange); }
+
+  .sub-card ul { margin: 0; }
+  .sub-card ul li { font-size: 13px; border-bottom: none; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: rgba(204,0,0,0.06);
+    border-top: 2px solid #CC0000;
+    padding: 30px 40px;
+    text-align: center;
+  }
+
+  footer p {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(0,0,0,0.3);
+    font-weight: 500;
+    margin: 0;
+  }
+
+  /* ── PROTECTED OVERLAY ── */
+  #protect-msg {
+    display: none;
+    position: fixed;
+    top: 20px; left: 50%; transform: translateX(-50%);
+    background: #FFFFFF;
+    border: 1px solid #CC0000;
+    color: #CC0000;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    z-index: 99999;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; top: 10px; } to { opacity: 1; top: 20px; } }
+
+  @media (max-width: 640px) {
+    .container { padding: 40px 20px; }
+    header { padding: 40px 20px 36px; }
+    .diff-grid, .sub-grid { grid-template-columns: 1fr; }
+    .version-row { grid-template-columns: 80px 1fr; }
+  }
+
+  /* ── VIDEO ── */
+  .video-wrap {
+    margin: 20px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #000;
+  }
+
+  .video-wrap video {
+    width: 100%;
+    display: block;
+    max-height: 520px;
+    object-fit: contain;
+  }
+
+  .video-caption {
+    background: rgba(204,0,0,0.05);
+    border-top: 1px solid rgba(204,0,0,0.2);
+    padding: 10px 16px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+  }
+
+  /* ── REQ META ── */
+  .req-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 28px;
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 6px;
+  }
+
+  .req-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .req-meta-item span:last-child {
+    font-size: 13px;
+    color: #444444;
+  }
+
+
+  /* ── LAYOUT CON SIDEBAR ── */
+  .page-layout {
+    display: flex;
+    align-items: flex-start;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* ── SIDEBAR / ÍNDICE ── */
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    position: sticky;
+    top: 24px;
+    padding: 32px 0 32px 24px;
+    align-self: flex-start;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 700;
+    color: #CC0000;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #CC0000;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sidebar nav a {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #444444;
+    font-size: 12.5px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.4;
+    transition: background 0.2s, color 0.2s, border-left 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar nav a:hover {
+    background: rgba(204,0,0,0.06);
+    color: #CC0000;
+    border-left: 3px solid #CC0000;
+  }
+
+  .sidebar nav a.active {
+    background: rgba(204,0,0,0.08);
+    color: #CC0000;
+    border-left: 3px solid #CC0000;
+    font-weight: 600;
+  }
+
+  .sidebar nav a .nav-num {
+    font-size: 10px;
+    font-weight: 700;
+    color: #CC0000;
+    background: rgba(204,0,0,0.1);
+    border-radius: 3px;
+    padding: 2px 6px;
+    min-width: 26px;
+    text-align: center;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  /* ── CONTENIDO PRINCIPAL ── */
+  .main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 40px 60px 32px;
+    border-left: 1px solid rgba(0,0,0,0.07);
+  }
+
+  /* Ajustar container existente */
+  .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (max-width: 900px) {
+    .page-layout { flex-direction: column; }
+    .sidebar {
+      width: 100%;
+      min-width: unset;
+      position: relative;
+      top: 0;
+      padding: 20px 20px 0;
+      border-left: none;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+    .sidebar nav { flex-direction: row; flex-wrap: wrap; }
+    .sidebar nav a { font-size: 11px; padding: 6px 8px; }
+    .main-content { padding: 24px 20px 40px; border-left: none; }
+  }
+
+
+  /* ── TEST CASES ── */
+  .tc-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0 16px;
+  }
+
+  .tc-tab {
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.12);
+    color: #444;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .tc-tab:hover { background: rgba(204,0,0,0.06); color: #CC0000; border-color: rgba(204,0,0,0.3); }
+  .tc-tab.active { background: #CC0000; color: #fff; border-color: #CC0000; font-weight: 600; }
+
+  .tc-tab-content { display: none; }
+  .tc-tab-content.active { display: block; }
+
+  .tc-card {
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .tc-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.03);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    flex-wrap: wrap;
+  }
+
+  .tc-id {
+    font-size: 11px;
+    font-weight: 700;
+    color: #CC0000;
+    background: rgba(204,0,0,0.08);
+    border: 1px solid rgba(204,0,0,0.2);
+    padding: 3px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .tc-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111;
+    flex: 1;
+  }
+
+  .tc-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .tc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .tc-table tr { border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .tc-table tr:last-child { border-bottom: none; }
+
+  .tc-label {
+    width: 140px;
+    min-width: 140px;
+    padding: 9px 16px;
+    font-weight: 600;
+    font-size: 11px;
+    color: #CC0000;
+    background: rgba(0,0,0,0.02);
+    vertical-align: top;
+    white-space: nowrap;
+    border-right: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .tc-table td:last-child {
+    padding: 9px 16px;
+    color: #333;
+    vertical-align: top;
+  }
+
+  .tc-steps {
+    margin: 0;
+    padding-left: 18px;
+    color: #333;
+  }
+
+  .tc-steps li { margin: 3px 0; }
+
+  .tc-status {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="protect-msg">🔒 Contenido protegido — Solo lectura</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-badge">SOLO LECTURA · VERSIÓN 2.0</div>
+  <h1>Reporte de Bug — LinkedIn<br><span>CABA ≠ Provincia de Buenos Aires</span></h1>
+  <p class="header-sub">Defecto de datos con impacto masivo en usuarios argentinos</p>
+  <div class="header-meta">
+    <div class="meta-item">
+      <span class="meta-label">Plataforma</span>
+      <span class="meta-value">LinkedIn</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Tipo</span>
+      <span class="meta-value">Defecto de Datos</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Estado</span>
+      <span class="meta-value">Abierto — Sin resolución</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Versión</span>
+      <span class="meta-value">2.0 — Mayo 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Autora</span>
+      <span class="meta-value">QA Senior Analyst — 25+ años de experiencia</span>
+    </div>
+  </div>
+</header>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-label">Índice</div>
+    <nav id="sidebar-nav">
+      <a href="#sec-01" class="active"><span class="nav-num">01</span>Descripción del Defecto</a>
+      <a href="#sec-02"><span class="nav-num">02</span>Riesgos Operativos</a>
+      <a href="#sec-03"><span class="nav-num">03</span>Riesgos Comerciales</a>
+      <a href="#sec-04"><span class="nav-num">04</span>Registro Consolidado</a>
+      <a href="#sec-05"><span class="nav-num">05</span>Corrección Esperada</a>
+      <a href="#sec-06"><span class="nav-num">06</span>Video del Bug</a>
+      <a href="#sec-07"><span class="nav-num">07</span>Requerimientos API</a>
+      <a href="#sec-08"><span class="nav-num">08</span>Test Cases</a>
+    </nav>
+  </aside>
+  <div class="main-content">
+<div class="container">
+
+  <!-- 1. DESCRIPCIÓN -->
+  <div class="section" id="sec-01">
+    <h2 class="section-title"><span class="num">01</span>Descripción del Defecto</h2>
+    <p>LinkedIn no reconoce a la <strong>Ciudad Autónoma de Buenos Aires (CABA)</strong> como entidad geográfica independiente. La plataforma categoriza barrios y comunas de CABA bajo la "Provincia de Buenos Aires", siendo jurisdicciones política y administrativamente distintas.</p>
+    <p><strong>Ejemplo documentado:</strong> el barrio de Liniers (Comuna 9 de CABA) aparece etiquetado como "Liniers, Comuna 9, Provincia de Buenos Aires".</p>
+    <div class="diff-grid">
+      <div class="diff-card caba">
+        <h4>🏙️ CABA</h4>
+        <p>Capital federal de Argentina. Estatus autónomo equivalente al de una provincia. Sus divisiones administrativas se llaman <em>Comunas</em> (48 barrios, 15 comunas).</p>
+      </div>
+      <div class="diff-card pba">
+        <h4>🗺️ Provincia de Buenos Aires</h4>
+        <p>Jurisdicción separada. Capital: <em>La Plata</em>. Sus divisiones administrativas se llaman <em>Partidos y Municipios</em>.</p>
+      </div>
+    </div>
+    <div class="callout warning">
+      <div class="callout-label">⚠️ Estado del Reporte</div>
+      <p>Este defecto fue reportado al soporte técnico de LinkedIn a través de los canales oficiales. La respuesta fue inadecuada: no fue clasificado como un bug y no se obtuvo ninguna solución.</p>
+    </div>
+  </div>
+
+  <!-- 2. RIESGOS OPERATIVOS -->
+  <div class="section" id="sec-02">
+    <h2 class="section-title"><span class="num">02</span>Riesgos Operativos y Geográficos</h2>
+    <div class="risk-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Riesgo</th>
+            <th>Segmento</th>
+            <th>Impacto</th>
+            <th>Prob.</th>
+            <th>Severidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="td-id">R01</td><td>Errores en segmentación geográfica de reclutadores: candidatos de CABA aparecen como Provincia.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R02</td><td>Confusión de distancias de viaje entre CABA y la Provincia.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R03</td><td>Cálculo erróneo de gastos de traslado para trabajo presencial.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R04</td><td>Subestimación de costos de conectividad en el interior bonaerense.</td><td><span class="badge badge-todos">Todos</span></td><td>Medio</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R05</td><td>Impacto en costo de reuniones de equipos remotos convocados a CABA.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Media</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R06</td><td>Errores en costos de viaje al exterior desde el interior de PBA.</td><td><span class="badge badge-todos">Todos</span></td><td>Medio</td><td>Media</td><td><span class="badge badge-medio">MEDIO</span></td></tr>
+          <tr><td class="td-id">R07</td><td>Daño a la credibilidad del perfil profesional por ubicación incorrecta.</td><td><span class="badge badge-todos">Todos</span></td><td>Medio</td><td>Media</td><td><span class="badge badge-medio">MEDIO</span></td></tr>
+          <tr><td class="td-id">R08</td><td>Afectación exclusiva a trabajos presenciales e híbridos.</td><td><span class="badge badge-todos">Todos</span></td><td>Bajo</td><td>Alta</td><td><span class="badge badge-medio">MEDIO</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. RIESGOS COMERCIALES -->
+  <div class="section" id="sec-03">
+    <h2 class="section-title"><span class="num">03</span>Riesgos Comerciales y de Experiencia de Usuario</h2>
+
+    <h3 class="section-subtitle">3.1 — Impacto en Usuarios Premium</h3>
+    <p>Los usuarios Premium invierten dinero mensual o anualmente con el objetivo de maximizar la visibilidad y calidad de su perfil. El defecto impide completar correctamente uno de los datos más básicos y críticos: la ubicación.</p>
+    <div class="testimony">
+      <p>Siendo usuaria de LinkedIn Premium, considero una falta grave que la Ciudad Autónoma de Buenos Aires no se encuentre dentro de las ciudades y/o provincias de la República Argentina. Estoy invirtiendo dinero para que mi currículum sea lo mejor posible y es imposible completar dónde vivo cuando no vivo en la Provincia de Buenos Aires sino en la Ciudad de Buenos Aires.</p>
+      <div class="testimony-author">— QA SENIOR ANALYST · USUARIA LINKEDIN PREMIUM</div>
+    </div>
+    <ul>
+      <li>Un usuario Premium que no puede registrar su ubicación correctamente recibe un servicio deficiente en relación al precio pagado.</li>
+      <li>La promesa de valor de Premium incluye mayor visibilidad ante reclutadores — comprometida directamente por una ubicación incorrecta.</li>
+      <li>El defecto genera una percepción de producto incompleto, incompatible con un servicio de pago.</li>
+    </ul>
+
+    <h3 class="section-subtitle">3.2 — Impacto en Usuarios con Versión Gratuita</h3>
+    <ul>
+      <li>Perfiles con ubicación incorrecta quedan excluidos de búsquedas geográficas precisas realizadas por reclutadores.</li>
+      <li>Usuarios gratuitos son potenciales candidatos a Premium — si la experiencia gratuita es negativa, la conversión se ve comprometida.</li>
+      <li>El bug afecta a todos los residentes en CABA, independientemente del plan contratado.</li>
+    </ul>
+
+    <h3 class="section-subtitle">3.3 — Riesgo por Soporte Técnico Deficiente</h3>
+    <ul>
+      <li>Un soporte que no escala correctamente un defecto de datos masivo genera desconfianza en la plataforma.</li>
+      <li>La mala gestión del reporte influye directamente en la decisión de renovar o no la suscripción.</li>
+      <li>El riesgo reputacional se amplifica cuando el afectado es un profesional de QA capaz de documentar y difundir el defecto públicamente.</li>
+    </ul>
+
+    <h3 class="section-subtitle">3.4 — Pérdida de Ingresos por Suscripciones</h3>
+    <div class="sub-grid">
+      <div class="sub-card mensual">
+        <h4>SUSCRIPCIÓN MENSUAL</h4>
+        <div class="sub-sev">RIESGO CRÍTICO</div>
+        <ul>
+          <li>Ciclo de 30 días — si no se resuelve, el usuario no renueva sin penalización.</li>
+          <li>Barrera de salida mínima: basta con no renovar.</li>
+          <li>Pérdida inmediata y acumulativa por cada mes sin corrección.</li>
+        </ul>
+      </div>
+      <div class="sub-card anual">
+        <h4>SUSCRIPCIÓN ANUAL</h4>
+        <div class="sub-sev">RIESGO ALTO</div>
+        <ul>
+          <li>LinkedIn dispone de más tiempo para corregir antes del vencimiento.</li>
+          <li>Si el problema persiste al renovar, la probabilidad de abandono es muy alta.</li>
+          <li>Riesgo de solicitudes de reembolso o reclamos formales.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. TABLA CONSOLIDADA -->
+  <div class="section" id="sec-04">
+    <h2 class="section-title"><span class="num">04</span>Registro Consolidado de Riesgos — v2.0</h2>
+    <div class="risk-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Riesgo</th>
+            <th>Segmento</th>
+            <th>Impacto</th>
+            <th>Prob.</th>
+            <th>Severidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="td-id">R01</td><td>Errores en segmentación geográfica de reclutadores.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R02</td><td>Confusión de distancias de viaje entre CABA y la Provincia.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R03</td><td>Cálculo erróneo de gastos de traslado para trabajo presencial.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R04</td><td>Subestimación de costos de conectividad en el interior bonaerense.</td><td><span class="badge badge-todos">Todos</span></td><td>Medio</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R05</td><td>Impacto en costo de reuniones de equipos remotos convocados a CABA.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Media</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr><td class="td-id">R06</td><td>Errores en costos de viaje al exterior desde el interior de PBA.</td><td><span class="badge badge-todos">Todos</span></td><td>Medio</td><td>Media</td><td><span class="badge badge-medio">MEDIO</span></td></tr>
+          <tr><td class="td-id">R07</td><td>Daño a la credibilidad del perfil profesional.</td><td><span class="badge badge-todos">Todos</span></td><td>Medio</td><td>Media</td><td><span class="badge badge-medio">MEDIO</span></td></tr>
+          <tr><td class="td-id">R08</td><td>Afectación exclusiva a trabajos presenciales e híbridos.</td><td><span class="badge badge-todos">Todos</span></td><td>Bajo</td><td>Alta</td><td><span class="badge badge-medio">MEDIO</span></td></tr>
+          <tr style="background:rgba(204,0,0,0.04)"><td class="td-id">R09</td><td>Usuario Premium recibe servicio deficiente: no puede registrar su ubicación correctamente.</td><td><span class="badge badge-premium">Premium</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-critico">CRÍTICO</span></td></tr>
+          <tr style="background:rgba(204,0,0,0.04)"><td class="td-id">R10</td><td>Soporte técnico deficiente influye en la decisión de renovar la suscripción.</td><td><span class="badge badge-premium">Premium</span> <span class="badge badge-free">Free</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr style="background:rgba(204,0,0,0.04)"><td class="td-id">R11</td><td>No renovación mensual: barrera de salida mínima, pérdida inmediata y acumulativa.</td><td><span class="badge badge-premium">Mensual</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-critico">CRÍTICO</span></td></tr>
+          <tr style="background:rgba(204,0,0,0.04)"><td class="td-id">R12</td><td>No renovación anual al vencimiento por experiencia negativa no resuelta.</td><td><span class="badge badge-premium">Anual</span></td><td>Alto</td><td>Media</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr style="background:rgba(204,0,0,0.04)"><td class="td-id">R13</td><td>Solicitudes de reembolso o reclamos formales por servicio Premium deficiente.</td><td><span class="badge badge-premium">Premium</span></td><td>Medio</td><td>Media</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr style="background:rgba(204,0,0,0.04)"><td class="td-id">R14</td><td>Baja conversión de usuarios gratuitos a Premium por experiencia negativa.</td><td><span class="badge badge-free">Free</span></td><td>Medio</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+          <tr style="background:rgba(204,0,0,0.04)"><td class="td-id">R15</td><td>Riesgo reputacional amplificado: defecto documentado y difundido por profesionales de QA.</td><td><span class="badge badge-todos">Todos</span></td><td>Alto</td><td>Alta</td><td><span class="badge badge-alto">ALTO</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:12px; color:rgba(247,243,237,0.35); margin-top:8px; font-style:italic;">★ Filas destacadas = riesgos incorporados en v2.0</p>
+  </div>
+
+  <!-- 5. CORRECCIÓN -->
+  <div class="section" id="sec-05">
+    <h2 class="section-title"><span class="num">05</span>Corrección Esperada</h2>
+    <p>LinkedIn debe incorporar la Ciudad Autónoma de Buenos Aires como entidad geográfica independiente en su base de datos, separada de la Provincia de Buenos Aires, con sus 48 barrios y 15 comunas correctamente clasificados.</p>
+    <ul>
+      <li>Segmentación geográfica precisa para reclutadores y candidatos.</li>
+      <li>Planificación logística y presupuestaria correcta para roles presenciales e híbridos.</li>
+      <li>Datos de perfil verídicos para todos los usuarios residentes en CABA.</li>
+      <li>Experiencia de usuario Premium acorde al precio pagado.</li>
+    </ul>
+    <div class="callout gold">
+      <div class="callout-label">Versión del Reporte</div>
+      <p>Este documento corresponde al Reporte de Riesgos v2.0. La versión 1.0 cubrió los riesgos operativos y geográficos. Esta versión incorpora el impacto comercial sobre usuarios Premium, Free y los ingresos por suscripción de la plataforma.</p>
+    </div>
+  </div>
+
+  <!-- VIDEO -->
+  <div class="section" id="sec-06">
+    <h2 class="section-title"><span class="num">06</span>Demostración del Bug — Video</h2>
+    <p>Grabación de pantalla que documenta el comportamiento incorrecto de LinkedIn al buscar ubicaciones de la Ciudad Autónoma de Buenos Aires.</p>
+    <div class="video-wrap">
+      <video controls controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture>
+        <source src="Video_Project_3.mp4" type="video/mp4">
+        Tu navegador no soporta la reproducción de video HTML5.
+      </video>
+      <div class="video-caption">📹 Evidencia visual — Bug LinkedIn CABA vs PBA</div>
+    </div>
+  </div>
+
+  <!-- REQUERIMIENTOS API -->
+  <div class="section" id="sec-07">
+    <h2 class="section-title"><span class="num">07</span>Documento de Requerimientos — Argentina API v1</h2>
+    <p>Especificación técnica formal dirigida al equipo de producto e ingeniería de LinkedIn para la corrección del defecto en la API de geolocalización.</p>
+
+    <div class="callout">
+      <div class="callout-label">📄 Audiencia</div>
+      <p>Equipo de producto e ingeniería de LinkedIn · Módulo: User Profile → Experience → Location field · Prioridad sugerida: Media-Alta · Estado: Propuesto</p>
+    </div>
+
+    <h3 class="section-subtitle">Resumen Ejecutivo</h3>
+    <p>El campo de autocompletado (typeahead) de ubicación en el formulario de experiencia <strong>no distingue correctamente la Ciudad Autónoma de Buenos Aires (CABA)</strong> de la <strong>Provincia de Buenos Aires (PBA)</strong>. El sistema devuelve sugerencias ambiguas o incorrectas y en algunos casos persiste <strong>texto libre</strong> en lugar de una entidad geográfica canónica.</p>
+    <p>El problema afecta tres frentes: <strong>integridad de datos</strong>, <strong>experiencia de usuario</strong> y <strong>confianza en el producto</strong>.</p>
+
+    <h3 class="section-subtitle">Contexto de Negocio — Argentina</h3>
+    <div class="risk-table-wrap">
+      <table>
+        <thead><tr><th>Regla</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CABA ≠ PBA</strong></td><td>CABA es un distrito federal autónomo; NO forma parte de la Provincia de Buenos Aires.</td></tr>
+          <tr><td><strong>Ambigüedad</strong></td><td>El término "Buenos Aires" sin aclaración es ambiguo → el sistema debe <strong>disambiguar</strong>, no asumir PBA.</td></tr>
+          <tr><td><strong>Nomenclatura CABA</strong></td><td>Divisiones: 48 barrios, 15 comunas (término exclusivo de CABA).</td></tr>
+          <tr><td><strong>Nomenclatura PBA</strong></td><td>Capital: La Plata. Divisiones: partidos y municipios.</td></tr>
+          <tr><td><strong>Sigla CABA</strong></td><td>Debe resolver a la entidad argentina, no a homónimos internacionales.</td></tr>
+          <tr><td><strong>AMBA / GBA</strong></td><td>Área metropolitana ≠ provincia completa; no reemplaza a CABA como entidad.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="section-subtitle">Síntomas Documentados</h3>
+    <div class="risk-table-wrap">
+      <table>
+        <thead><tr><th>Síntoma</th><th>Comportamiento Actual</th><th>Comportamiento Esperado</th></tr></thead>
+        <tbody>
+          <tr><td>Búsqueda ambigua</td><td>Solo muestra sugerencias de PBA o GBA.</td><td>Debe ofrecer CABA y PBA como opciones separadas.</td></tr>
+          <tr><td>Nombre completo CABA</td><td>Devuelve eco del texto sin entidad canónica.</td><td>Debe retornar sugerencia con entityId canónico.</td></tr>
+          <tr><td>Sigla CABA</td><td>Prioriza resultados extranjeros (EE.UU., Filipinas, Australia).</td><td>Debe resolver a CABA, Argentina.</td></tr>
+          <tr><td>Barrios y comunas</td><td>Villa Riachuelo, Comuna 9 aparecen bajo PBA.</td><td>La jurisdicción padre debe ser CABA.</td></tr>
+          <tr><td>Persistencia al guardar</td><td>Persiste texto libre en español en lugar de entidad normalizada.</td><td>Debe persistir entityId canónico.</td></tr>
+          <tr><td>Regresión PBA</td><td>Localidades y partidos de PBA funcionan correctamente.</td><td>Ese comportamiento debe permanecer sin cambios.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="section-subtitle">Modelo de Entidades Requerido</h3>
+    <div class="risk-table-wrap">
+      <table>
+        <thead><tr><th>Entidad</th><th>Referencia</th><th>Entidad Padre</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CABA</strong></td><td>ISO 3166-2 AR-C; capital federal</td><td>Argentina</td></tr>
+          <tr><td><strong>PBA</strong></td><td>ISO 3166-2 AR-B</td><td>Argentina</td></tr>
+          <tr><td>Barrios/Comunas de CABA</td><td>Nomenclatura local</td><td>CABA (no PBA)</td></tr>
+          <tr><td>Partidos/Municipios de PBA</td><td>Nomenclatura local</td><td>PBA</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="section-subtitle">Criterios de Aceptación</h3>
+    <ul>
+      <li><strong>API:</strong> "Ciudad Autónoma de Buenos Aires" debe retornar al menos una sugerencia canónica con entityId no nulo.</li>
+      <li><strong>API:</strong> "Buenos Aires" debe retornar candidatos separados para CABA y PBA con identificadores distintos y etiquetas de disambiguación.</li>
+      <li><strong>API:</strong> Barrios y comunas como Palermo, Villa Riachuelo y Comuna 9 deben resolver bajo la jurisdicción padre CABA.</li>
+      <li><strong>UI:</strong> El usuario debe poder navegar sugerencias con teclado y seleccionar sin mouse (accesibilidad WAI-ARIA).</li>
+      <li><strong>Persistencia:</strong> Al guardar, debe persistirse el entityId canónico, no solo texto libre.</li>
+      <li><strong>Regresión:</strong> Localidades y partidos de PBA que actualmente resuelven correctamente deben continuar haciéndolo.</li>
+    </ul>
+
+    <h3 class="section-subtitle">Benchmark de Referencia — API Georef Argentina</h3>
+    <p>El gobierno argentino publica la <strong>API Georef</strong> como referencia oficial para normalización territorial. Permite distinguir jurisdicciones, resolver localidades y hacer geocodificación inversa.</p>
+    <div class="risk-table-wrap">
+      <table>
+        <thead><tr><th>Endpoint</th><th>Relevancia</th></tr></thead>
+        <tbody>
+          <tr><td>/provincias</td><td>Normalización canónica a nivel provincial, incluyendo CABA como jurisdicción distinta.</td></tr>
+          <tr><td>/localidades</td><td>Canonicalización a nivel de localidad y diferenciación de jurisdicciones.</td></tr>
+          <tr><td>/municipios</td><td>Identificadores de municipios y alcance provincial en PBA.</td></tr>
+          <tr><td>/ubicacion</td><td>Geocodificación inversa para resolver coordenadas a provincia/municipio.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-label">⚠️ Impacto si no se implementa</div>
+      <p>Usuarios en CABA clasificados incorrectamente bajo PBA o como texto libre · Segmentación geográfica incorrecta de empleos y candidatos · Perfiles con ubicaciones no normalizadas difíciles de deduplicar · Pérdida de confianza de usuarios argentinos en el producto.</p>
+    </div>
+
+    <div class="req-meta">
+      <div class="req-meta-item"><span class="meta-label">Versión</span><span>v1.1</span></div>
+      <div class="req-meta-item"><span class="meta-label">Fecha</span><span>Junio 2026</span></div>
+      <div class="req-meta-item"><span class="meta-label">Referencia</span><span>Argentina Georef API — datos.gob.ar</span></div>
+    </div>
+  </div>
+
+
+</div>
+
+  <!-- 08. TEST CASES -->
+  <div class="section" id="sec-08">
+    <h2 class="section-title"><span class="num">08</span>Test Cases &amp; Test Data Set</h2>
+    <p>Casos de prueba documentados con evidencia del defecto, incluyendo casos positivos, límite y de Provincia de Buenos Aires, junto con el set de datos de prueba y reglas de negocio validadas.</p>
+
+    <div class="tc-tabs">
+      <button class="tc-tab active" onclick="showTab('tab-positive')">✅ Positivos CABA</button>
+      <button class="tc-tab" onclick="showTab('tab-boundary')">🔲 Límite CABA</button>
+      <button class="tc-tab" onclick="showTab('tab-pba')">🗺️ PBA</button>
+      <button class="tc-tab" onclick="showTab('tab-data')">📋 Set de Datos</button>
+      <button class="tc-tab" onclick="showTab('tab-rules')">📌 Reglas de Negocio</button>
+    </div>
+
+    <div id="tab-positive" class="tc-tab-content active">
+      <p style="margin-bottom:16px;font-size:13px;color:#555">Validan el comportamiento correcto esperado al buscar ubicaciones dentro de la Ciudad Autónoma de Buenos Aires.</p>
+      
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-P01</span>
+        <span class="tc-title">Direct search for Autonomous City of Buenos Aires</span>
+        <span class="tc-badge" style="background:#D5F5E3;color:#1E8449">Positive</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "Ciudad Autónoma de Buenos Aires".</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>The system suggests "Autonomous City of Buenos Aires, Argentina" as an independent option, separate from "Province of Buenos Aires".</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>The option does not exist. Only "Province of Buenos Aires" appears.</td></tr>
+        
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#FFD5D5;color:#990000">❌ FAIL</span></td></tr>
+      </table>
+    </div>
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-P02</span>
+        <span class="tc-title">Search for a neighborhood belonging to CABA</span>
+        <span class="tc-badge" style="background:#D5F5E3;color:#1E8449">Positive</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "Palermo".</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>Result shows "Palermo, Autonomous City of Buenos Aires, Argentina".</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>Result shows "Palermo, Province of Buenos Aires, Argentina".</td></tr>
+        
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#FFD5D5;color:#990000">❌ FAIL</span></td></tr>
+      </table>
+    </div>
+    </div>
+
+    <div id="tab-boundary" class="tc-tab-content">
+      <p style="margin-bottom:16px;font-size:13px;color:#555">Validan el comportamiento en situaciones fronterizas o de nomenclatura administrativa específica de CABA.</p>
+      
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-L01</span>
+        <span class="tc-title">Ambiguous search: term "Buenos Aires"</span>
+        <span class="tc-badge" style="background:#EBF5FB;color:#1A5276">Boundary</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Type only "Buenos Aires" in the City field.</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>The system displays both options separately: "Autonomous City of Buenos Aires" and "Province of Buenos Aires".</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>Only "Province of Buenos Aires" appears. CABA does not exist as an entity.</td></tr>
+        
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#FFD5D5;color:#990000">❌ FAIL</span></td></tr>
+      </table>
+    </div>
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-L02</span>
+        <span class="tc-title">Neighborhood on the geographic border between CABA and GBA</span>
+        <span class="tc-badge" style="background:#EBF5FB;color:#1A5276">Boundary</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "Villa Riachuelo" (a CABA neighborhood bordering Lanús, Province).</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>"Villa Riachuelo" appears associated with CABA, NOT with the Province of Buenos Aires.</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>It is associated with Province of Buenos Aires, confusing it with the neighboring municipality.</td></tr>
+        <tr><td class="tc-label">Notes</td><td>Critical boundary case: actual geographic limit between CABA and Greater Buenos Aires.</td></tr>
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#FFD5D5;color:#990000">❌ FAIL</span></td></tr>
+      </table>
+    </div>
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-L03</span>
+        <span class="tc-title">Greater Buenos Aires municipality bordering CABA: Avellaneda</span>
+        <span class="tc-badge" style="background:#EBF5FB;color:#1A5276">Boundary</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "Avellaneda" (a Province municipality bordering CABA).</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>"Avellaneda" correctly appears under "Province of Buenos Aires", without confusion with CABA.</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>Appears under Province of Buenos Aires — correct data in this case.</td></tr>
+        <tr><td class="tc-label">Notes</td><td>This case passes accidentally. Valid to verify that the CABA fix does not break adjacent GBA municipalities.</td></tr>
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#FFF3CD;color:#856404">⚠️ PASSES WITH RISK</span></td></tr>
+      </table>
+    </div>
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-L04</span>
+        <span class="tc-title">Search by CABA administrative division: Commune 9</span>
+        <span class="tc-badge" style="background:#EBF5FB;color:#1A5276">Boundary</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "Comuna 9".</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>The system suggests "Commune 9, Autonomous City of Buenos Aires, Argentina", including its neighborhoods: Liniers, Mataderos, and Parque Avellaneda.</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>It is associated with Province of Buenos Aires, even though communes are an administrative division exclusive to CABA.</td></tr>
+        <tr><td class="tc-label">Notes</td><td>The term "Commune" alone is a sufficient indicator to identify CABA. The Province of Buenos Aires uses partidos and municipalities, not communes.</td></tr>
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#FFD5D5;color:#990000">❌ FAIL</span></td></tr>
+      </table>
+    </div>
+    </div>
+
+    <div id="tab-pba" class="tc-tab-content">
+      <p style="margin-bottom:16px;font-size:13px;color:#555">Validan que localidades, municipios y partidos de PBA permanezcan correctamente clasificados tras la corrección del bug.</p>
+      
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-PBA01</span>
+        <span class="tc-title">Search by PBA Locality</span>
+        <span class="tc-badge" style="background:#D5F5E3;color:#1E8449">Positive</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "Mar del Plata".</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>The system suggests "Mar del Plata, Province of Buenos Aires, Argentina", without confusion with CABA.</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>Appears under Province of Buenos Aires — correct data.</td></tr>
+        <tr><td class="tc-label">Notes</td><td>Verify that the CABA fix does not alter localities that correctly belong to PBA.</td></tr>
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#D5F5E3;color:#1E8449">✅ PASS</span></td></tr>
+      </table>
+    </div>
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-PBA02</span>
+        <span class="tc-title">Search by Municipality: La Plata</span>
+        <span class="tc-badge" style="background:#D5F5E3;color:#1E8449">Positive</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "La Plata".</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>The system suggests "La Plata, Province of Buenos Aires, Argentina", the Provincial capital, without confusion with CABA.</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>Appears under Province of Buenos Aires — correct data.</td></tr>
+        <tr><td class="tc-label">Notes</td><td>Critical case: La Plata is the capital of PBA and must remain clearly differentiated from CABA after any fix.</td></tr>
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#D5F5E3;color:#1E8449">✅ PASS</span></td></tr>
+      </table>
+    </div>
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-PBA03</span>
+        <span class="tc-title">Search by PBA Partido</span>
+        <span class="tc-badge" style="background:#D5F5E3;color:#1E8449">Positive</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "Partido de General Pueyrredón".</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>The system suggests "Partido de General Pueyrredón, Province of Buenos Aires, Argentina".</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>Appears under Province of Buenos Aires — correct data.</td></tr>
+        <tr><td class="tc-label">Notes</td><td>"Partido" is exclusive PBA nomenclature. The system should recognize this distinction automatically, just as "Commune" is exclusive to CABA.</td></tr>
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#D5F5E3;color:#1E8449">✅ PASS</span></td></tr>
+      </table>
+    </div>
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-PBA04</span>
+        <span class="tc-title">Locality bordering CABA: Lanús</span>
+        <span class="tc-badge" style="background:#EBF5FB;color:#1A5276">Boundary</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Navigate to the City field.</li><li>Type "Lanús" (a GBA municipality bordering CABA).</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>"Lanús" appears under "Province of Buenos Aires, Argentina".</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>Appears under Province of Buenos Aires — correct data.</td></tr>
+        <tr><td class="tc-label">Notes</td><td>Critical boundary case: after fixing CABA, verify that adjacent GBA municipalities are not incorrectly reassigned.</td></tr>
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#FFF3CD;color:#856404">⚠️ PASSES WITH RISK</span></td></tr>
+      </table>
+    </div>
+    <div class="tc-card">
+      <div class="tc-header">
+        <span class="tc-id">TC-PBA05</span>
+        <span class="tc-title">Administrative nomenclature distinction: Partido vs. Commune</span>
+        <span class="tc-badge" style="background:#EBF5FB;color:#1A5276">Boundary</span>
+      </div>
+      <table class="tc-table">
+        <tr><td class="tc-label">Module</td><td>User Profile — City Field</td></tr>
+        <tr><td class="tc-label">Precondition</td><td>User is logged into LinkedIn and editing the location field.</td></tr>
+        <tr><td class="tc-label">Steps</td><td><ol class="tc-steps"><li>Type "Partido de La Matanza" and record result.</li><li>In a separate search, type "Comuna 9" and record result.</li></ol></td></tr>
+        <tr><td class="tc-label">Expected Result</td><td>"Partido de La Matanza" → Province of Buenos Aires. "Commune 9" → Autonomous City of Buenos Aires. The system correctly distinguishes both nomenclatures.</td></tr>
+        <tr><td class="tc-label">Actual Result</td><td>"Partido de La Matanza" appears in PBA (correct). "Commune 9" appears in PBA (incorrect).</td></tr>
+        <tr><td class="tc-label">Notes</td><td>Key business rule: Partido = PBA, Commune = CABA.</td></tr>
+        <tr><td class="tc-label">Status</td>
+            <td><span class="tc-status" style="background:#FDEBD0;color:#D35400">❌ PARTIAL FAIL</span></td></tr>
+      </table>
+    </div>
+    </div>
+
+    <div id="tab-data" class="tc-tab-content">
+      <p style="margin-bottom:16px;font-size:13px;color:#555">Combinaciones mínimas necesarias para cubrir todos los casos de prueba documentados.</p>
+      <div class="risk-table-wrap">
+        <table>
+          <thead><tr><th>TD-ID</th><th>Input Data</th><th>Type</th><th>Jurisdiction</th><th>Expected Result</th><th>TC Ref.</th><th>Class.</th></tr></thead>
+          <tbody><tr><td style="font-weight:700;color:#CC0000">TD-01</td><td><strong>Ciudad Autónoma de Buenos Aires</strong></td><td>City / Full name</td><td>CABA</td><td>Autonomous City of Buenos Aires, Argentina</td><td style="color:#666">TC-P01</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-02</td><td><strong>CABA</strong></td><td>City / Acronym</td><td>CABA</td><td>Autonomous City of Buenos Aires, Argentina</td><td style="color:#666">TC-P01</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-03</td><td><strong>Palermo</strong></td><td>CABA Neighborhood</td><td>CABA</td><td>Palermo, Autonomous City of Buenos Aires, Argentina</td><td style="color:#666">TC-P02</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-04</td><td><strong>Liniers</strong></td><td>CABA Neighborhood</td><td>CABA</td><td>Liniers, Commune 9, Autonomous City of Buenos Aires, Argentina</td><td style="color:#666">TC-P02</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-05</td><td><strong>Buenos Aires</strong></td><td>Ambiguous term</td><td>CABA + PBA</td><td>Must show both jurisdictions as separate options</td><td style="color:#666">TC-L01</td><td><span style="background:#EBF5FB;color:#1A5276;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Boundary</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-06</td><td><strong>Villa Riachuelo</strong></td><td>CABA neighborhood bordering PBA</td><td>CABA</td><td>Villa Riachuelo, Autonomous City of Buenos Aires, Argentina</td><td style="color:#666">TC-L02</td><td><span style="background:#EBF5FB;color:#1A5276;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Boundary</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-07</td><td><strong>Avellaneda</strong></td><td>GBA municipality bordering CABA</td><td>PBA</td><td>Avellaneda, Province of Buenos Aires, Argentina</td><td style="color:#666">TC-L03</td><td><span style="background:#EBF5FB;color:#1A5276;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Boundary</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-08</td><td><strong>Lanús</strong></td><td>GBA municipality bordering CABA</td><td>PBA</td><td>Lanús, Province of Buenos Aires, Argentina</td><td style="color:#666">TC-PBA04</td><td><span style="background:#EBF5FB;color:#1A5276;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Boundary</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-09</td><td><strong>Comuna 9</strong></td><td>CABA administrative division</td><td>CABA</td><td>Commune 9, Autonomous City of Buenos Aires, Argentina</td><td style="color:#666">TC-L04</td><td><span style="background:#EBF5FB;color:#1A5276;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Boundary</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-10</td><td><strong>Comuna</strong></td><td>Partial administrative term</td><td>CABA</td><td>Should suggest CABA communes only</td><td style="color:#666">TC-L04</td><td><span style="background:#EBF5FB;color:#1A5276;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Boundary</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-11</td><td><strong>Mar del Plata</strong></td><td>PBA Locality</td><td>PBA</td><td>Mar del Plata, Province of Buenos Aires, Argentina</td><td style="color:#666">TC-PBA01</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-12</td><td><strong>La Plata</strong></td><td>Municipality / PBA Capital</td><td>PBA</td><td>La Plata, Province of Buenos Aires, Argentina</td><td style="color:#666">TC-PBA02</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-13</td><td><strong>Partido de General Pueyrredón</strong></td><td>PBA Partido</td><td>PBA</td><td>Partido de General Pueyrredón, Province of Buenos Aires, Argentina</td><td style="color:#666">TC-PBA03</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-14</td><td><strong>Partido</strong></td><td>Partial administrative term</td><td>PBA</td><td>Should suggest PBA partidos only</td><td style="color:#666">TC-PBA03</td><td><span style="background:#EBF5FB;color:#1A5276;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Boundary</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-15</td><td><strong>Partido de La Matanza</strong></td><td>PBA Partido</td><td>PBA</td><td>Partido de La Matanza, Province of Buenos Aires, Argentina</td><td style="color:#666">TC-PBA05</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-16</td><td><strong>Zárate</strong></td><td>PBA interior locality</td><td>PBA</td><td>Zárate, Province of Buenos Aires, Argentina</td><td style="color:#666">TC-PBA01</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-17</td><td><strong>Bahía Blanca</strong></td><td>PBA interior locality</td><td>PBA</td><td>Bahía Blanca, Province of Buenos Aires, Argentina</td><td style="color:#666">TC-PBA01</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr><tr><td style="font-weight:700;color:#CC0000">TD-18</td><td><strong>Venado Tuerto</strong></td><td>Locality outside PBA</td><td>Santa Fe</td><td>Venado Tuerto, Santa Fe, Argentina</td><td style="color:#666">TC-PBA01</td><td><span style="background:#D5F5E3;color:#1E8449;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;">Positive</span></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-rules" class="tc-tab-content">
+      <p style="margin-bottom:16px;font-size:13px;color:#555">Reglas de negocio validadas por el set de datos de prueba.</p>
+      <div class="risk-table-wrap">
+        <table>
+          <thead><tr><th>Business Rule</th><th>Validated by</th></tr></thead>
+          <tbody><tr><td>CABA exists as an independent geographic entity, separate from PBA</td><td style="font-weight:600;color:#CC0000">TD-01, TD-02</td></tr><tr><td>CABA neighborhoods are associated with CABA, not PBA</td><td style="font-weight:600;color:#CC0000">TD-03, TD-04, TD-06</td></tr><tr><td>Ambiguous search "Buenos Aires" displays both jurisdictions</td><td style="font-weight:600;color:#CC0000">TD-05</td></tr><tr><td>"Commune" is exclusive CABA nomenclature</td><td style="font-weight:600;color:#CC0000">TD-09, TD-10</td></tr><tr><td>"Partido" is exclusive PBA nomenclature</td><td style="font-weight:600;color:#CC0000">TD-13, TD-14, TD-15</td></tr><tr><td>GBA municipalities bordering CABA remain correctly in PBA</td><td style="font-weight:600;color:#CC0000">TD-07, TD-08</td></tr><tr><td>PBA interior localities are not confused with CABA</td><td style="font-weight:600;color:#CC0000">TD-11, TD-12, TD-16, TD-17</td></tr><tr><td>Localities outside both PBA and CABA are not affected by the bug</td><td style="font-weight:600;color:#CC0000">TD-18</td></tr></tbody>
+        </table>
+      </div>
+      <p style="font-size:12px;color:#888;margin-top:12px;font-style:italic;">⚠️ Cases marked PASSES WITH RISK must be re-executed after the defect fix is applied.</p>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<footer>
+  <p>🔒 DOCUMENTO DE SOLO LECTURA · CONFIDENCIAL · QA SENIOR ANALYST · MAYO 2026</p>
+</footer>
+
+<script>
+  // Bloquear clic derecho
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    showProtect();
+  });
+
+  // Bloquear atajos de teclado
+  document.addEventListener('keydown', function(e) {
+    const blocked = [
+      e.ctrlKey && e.key === 'c',
+      e.ctrlKey && e.key === 'u',
+      e.ctrlKey && e.key === 's',
+      e.ctrlKey && e.key === 'a',
+      e.ctrlKey && e.key === 'p',
+      e.ctrlKey && e.shiftKey && e.key === 'I',
+      e.ctrlKey && e.shiftKey && e.key === 'J',
+      e.ctrlKey && e.shiftKey && e.key === 'C',
+      e.key === 'F12',
+      e.key === 'PrintScreen',
+    ];
+    if (blocked.some(Boolean)) {
+      e.preventDefault();
+      showProtect();
+    }
+  });
+
+  // Bloquear drag
+  document.addEventListener('dragstart', function(e) { e.preventDefault(); });
+
+  // Mensaje de protección
+  let hideTimer;
+  function showProtect() {
+    const msg = document.getElementById('protect-msg');
+    msg.style.display = 'block';
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => { msg.style.display = 'none'; }, 2500);
+  }
+
+
+  // Scroll spy para el sidebar
+  const sections = document.querySelectorAll('.section[id]');
+  const navLinks = document.querySelectorAll('#sidebar-nav a');
+
+  function updateActiveLink() {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 100;
+      if (window.scrollY >= sectionTop) current = section.getAttribute('id');
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveLink);
+
+  // Smooth scroll
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+
+  // Tab switching for test cases
+  function showTab(tabId) {
+    document.querySelectorAll('.tc-tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tc-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Bloquear selección por doble clic
+  document.addEventListener('selectstart', function(e) { e.preventDefault(); });
+</script>
+</body>
+</html>

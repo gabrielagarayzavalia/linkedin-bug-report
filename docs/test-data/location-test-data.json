@@ -1,0 +1,180 @@
+[
+  {
+    "id": "TD-01",
+    "tcIds": ["TC-P01", "TC-P01-Save"],
+    "query": "Ciudad Autónoma de Buenos Aires",
+    "category": "CABA-Bug",
+    "expectedJurisdiction": "CABA",
+    "expectedLabelEn": "Autonomous City of Buenos Aires",
+    "expectedLabelEs": "Ciudad Autónoma de Buenos Aires",
+    "assertionType": "typeahead",
+    "notes": "Nombre completo CABA; Save espera entidad canónica EN"
+  },
+  {
+    "id": "TD-02",
+    "tcIds": ["TC-P01"],
+    "query": "CABA",
+    "category": "CABA-Bug",
+    "expectedJurisdiction": "CABA",
+    "expectedLabelEn": "Autonomous City of Buenos Aires",
+    "expectedLabelEs": "Ciudad Autónoma de Buenos Aires",
+    "assertionType": "typeahead",
+    "notes": "Sigla CABA"
+  },
+  {
+    "id": "TD-03",
+    "tcIds": ["TC-P02"],
+    "query": "Palermo",
+    "category": "CABA-Bug",
+    "expectedJurisdiction": "CABA",
+    "expectedLabelEn": "Autonomous City of Buenos Aires",
+    "expectedLabelEs": "Ciudad Autónoma de Buenos Aires",
+    "assertionType": "typeahead",
+    "placeName": "Palermo",
+    "notes": "Barrio CABA"
+  },
+  {
+    "id": "TD-05",
+    "tcIds": ["TC-L01"],
+    "query": "Buenos Aires",
+    "category": "CABA-Bug",
+    "expectedJurisdiction": "CABA",
+    "expectedLabelEn": "Autonomous City of Buenos Aires",
+    "expectedLabelEs": "Ciudad Autónoma de Buenos Aires",
+    "assertionType": "typeahead",
+    "alsoExpectPba": true,
+    "notes": "Debe ofrecer CABA y PBA por separado"
+  },
+  {
+    "id": "TD-06",
+    "tcIds": ["TC-L02"],
+    "query": "Villa Riachuelo",
+    "category": "CABA-Bug",
+    "expectedJurisdiction": "CABA",
+    "expectedLabelEn": "Autonomous City of Buenos Aires",
+    "expectedLabelEs": "Ciudad Autónoma de Buenos Aires",
+    "assertionType": "typeahead",
+    "placeName": "Villa Riachuelo",
+    "notes": "Barrio limítrofe CABA/PBA"
+  },
+  {
+    "id": "TD-07",
+    "tcIds": ["TC-L03"],
+    "query": "Avellaneda",
+    "category": "PBA-Regression",
+    "expectedJurisdiction": "PBA",
+    "expectedLabelEn": "Buenos Aires Province",
+    "expectedLabelEs": "Provincia de Buenos Aires",
+    "assertionType": "typeahead",
+    "placeName": "Avellaneda",
+    "notes": "GBA limítrofe con CABA"
+  },
+  {
+    "id": "TD-08",
+    "tcIds": ["TC-PBA04"],
+    "query": "Lanús",
+    "category": "PBA-Regression",
+    "expectedJurisdiction": "PBA",
+    "expectedLabelEn": "Buenos Aires Province",
+    "expectedLabelEs": "Provincia de Buenos Aires",
+    "assertionType": "typeahead",
+    "placeName": "Lanús",
+    "notes": "TD-14 en doc TC-PBA04; mismo dato"
+  },
+  {
+    "id": "TD-09",
+    "tcIds": ["TC-L04"],
+    "query": "Comuna 9",
+    "category": "CABA-Bug",
+    "expectedJurisdiction": "CABA",
+    "expectedLabelEn": "Autonomous City of Buenos Aires",
+    "expectedLabelEs": "Ciudad Autónoma de Buenos Aires",
+    "assertionType": "typeahead",
+    "notes": "Nomenclatura exclusiva CABA"
+  },
+  {
+    "id": "TD-11",
+    "tcIds": ["TC-PBA01"],
+    "query": "Mar del Plata",
+    "category": "PBA-Regression",
+    "expectedJurisdiction": "PBA",
+    "expectedLabelEn": "Buenos Aires Province",
+    "expectedLabelEs": "Provincia de Buenos Aires",
+    "assertionType": "typeahead",
+    "placeName": "Mar del Plata",
+    "notes": "Localidad costera PBA"
+  },
+  {
+    "id": "TD-12",
+    "tcIds": ["TC-PBA02"],
+    "query": "La Plata",
+    "category": "PBA-Regression",
+    "expectedJurisdiction": "PBA",
+    "expectedLabelEn": "Buenos Aires Province",
+    "expectedLabelEs": "Provincia de Buenos Aires",
+    "assertionType": "typeahead",
+    "placeName": "La Plata",
+    "notes": "Capital provincial"
+  },
+  {
+    "id": "TD-13",
+    "tcIds": ["TC-PBA03"],
+    "query": "Partido de General Pueyrredón",
+    "category": "PBA-Regression",
+    "expectedJurisdiction": "PBA",
+    "expectedLabelEn": "Buenos Aires Province",
+    "expectedLabelEs": "Provincia de Buenos Aires",
+    "assertionType": "typeahead",
+    "notes": "Nomenclatura partido exclusiva PBA"
+  },
+  {
+    "id": "TD-N01",
+    "tcIds": ["TC-N01"],
+    "query": "",
+    "category": "Negative",
+    "assertionType": "negative",
+    "notes": "Campo vacío"
+  },
+  {
+    "id": "TD-N02",
+    "tcIds": ["TC-N02"],
+    "query": "     ",
+    "category": "Negative",
+    "assertionType": "negative",
+    "notes": "Solo espacios"
+  },
+  {
+    "id": "TD-N03",
+    "tcIds": ["TC-N03"],
+    "query": "@#$%^&*()_+{}<>",
+    "category": "Negative",
+    "assertionType": "negative",
+    "notes": "Caracteres especiales"
+  },
+  {
+    "id": "TD-N04",
+    "tcIds": ["TC-N04"],
+    "query": "<script>alert('xss')</script>",
+    "category": "Negative",
+    "assertionType": "negative",
+    "notes": "Inyección script"
+  },
+  {
+    "id": "TD-N05",
+    "tcIds": ["TC-N05"],
+    "query": "",
+    "queryRepeatChar": "a",
+    "queryRepeatCount": 300,
+    "category": "Negative",
+    "assertionType": "negative",
+    "notes": "Cadena larga 300×a"
+  },
+  {
+    "id": "TD-N06",
+    "tcIds": ["TC-N06"],
+    "query": "zzzqqqxywv123",
+    "category": "Negative",
+    "assertionType": "negative",
+    "notes": "Gibberish"
+  }
+]

@@ -18,4 +18,6 @@ public static class LinkedInPaths
     public static string TestResultsDir { get; } = Path.Combine(ProjectRoot, "TestResults");
 
     public static string BaselineDir { get; } = Path.Combine(TestResultsDir, "baseline");
+
+    public static string TestDataDir { get; } = Path.Combine(ProjectRoot, "docs", "test-data");
 }

@@ -1,66 +1,52 @@
 # To-do — Pendientes (post casos establecidos)
 
-> **Recordatorio:** retomar estos ítems cuando terminemos de ejecutar/revisar
-> todos los casos ya establecidos del PDF y automatizados (TC-P*, TC-L*, TC-PBA*,
-> TC-N*, TC-V*, TC-*-Save). El agente debe recordar al usuario al cerrar esa fase.
+> Casos establecidos del PDF: **completados**. Ítems de backlog implementados en 2026-06-01.
 
 ---
 
 ## 1. Set de datos (Test Data Set)
 
-- [ ] Armar / completar set de datos de prueba estructurado (más allá del PDF actual).
-- [ ] Alinear con `docs/TestCases_TestData_LinkedIn_CABA.pdf` y ampliar TD-* faltantes.
-- [ ] Formato reutilizable (JSON/CSV o `.md` tabular) para no hardcodear en tests.
-- [ ] Vincular cada TD con su TC en `docs/test-cases/cases/` e `INDEX.md`.
+- [x] Armar set de datos estructurado.
+- [x] Alinear con PDF y TD-* en `docs/test-data/location-test-data.json`.
+- [x] Formato JSON reutilizable + loader C# `LocationTestData.cs`.
+- [x] Vincular TD con TC en `INDEX.md` y `docs/test-data/README.md`.
 
-**Objetivo:** datos centralizados para automatización y futuro template.
+**Referencia:** [`docs/test-data/README.md`](../test-data/README.md)
 
 ---
 
 ## 2. Locale y lenguaje de presentación del perfil
 
-**Alcance inicial (obligatorio por ahora):** verificar solo en **inglés** y **español**.
+**Alcance inicial (EN + ES):** implementado.
 
-**Alcance futuro (opcional / backlog):**
+- [x] Parametrizar locale Playwright (`es-AR`, `en-US`) en `LinkedInTestBase`.
+- [x] Suite `LocaleLocationTest` (L01, P01, PBA01 × 2 locales).
+- [x] Documentar matriz en `docs/test-cases/locale-matrix.md`.
 
-- [ ] Set de pruebas para **locale** (región, timezone, formato de ubicación).
-- [ ] Set de pruebas para **lenguaje de presentación del perfil** (UI del formulario, etiquetas, sugerencias del typeahead).
-- [ ] Matriz: locale × idioma de perfil × query de Location (ej. `Buenos Aires` en EN vs ES).
-- [ ] Documentar si el bug CABA vs PBA se manifiesta distinto según idioma/locale.
+**Alcance futuro (opcional / baja prioridad):**
 
-**Notas:**
-
-- Hoy los tests usan `Locale = es-AR` en contexto Playwright; falta variante **en-US / English (Primary profile)** explícita.
-- LinkedIn puede mostrar `Buenos Aires Province` (EN) vs `Provincia de Buenos Aires` (ES).
+- [ ] Otros locales / timezone.
+- [ ] Sesión con perfil Primary language English dedicada.
+- [ ] Documentar si el bug CABA vs PBA varía por idioma de perfil (requiere corridas y registro en locale-matrix).
 
 ---
 
 ## 3. Restaurar perfil (Location)
 
-Contexto: tests que mutan Location (`LinkedInMutableLocationTestBase`, TC-*-Save) deben dejar el perfil como al inicio. En **TC-P01-Save** el TearDown falló en la verificación de persistencia y **puede no haberse restaurado** `CABA, Argentina`.
+- [x] TearDown restaura siempre (`finally` en `LinkedInMutableLocationTestBase`).
+- [x] Test `[Explicit]` + `tools/restore-location.ps1`.
+- [x] Baseline documentado en `docs/test-data/profile-baseline.md`.
+- [x] Verificado tras TC-P01-Save: perfil vuelve a `CABA, Argentina`.
 
-- [ ] Asegurar que **restaurar perfil siempre corre**, incluso si falla la assertion de persistencia (p. ej. `try/finally` en TearDown).
-- [ ] Script o test `[Explicit]` de **restauración manual** (`tools/restore-location.ps1` o similar) para recuperar el valor baseline del formulario de experiencia.
-- [ ] Documentar valor baseline esperado del perfil de prueba (Location en position 1864390597).
-- [ ] Verificar tras cada corrida Save-Persistence que el perfil quedó en el estado original.
-
-**Prioridad:** alta si hay tests Save pendientes; evita dejar datos incorrectos en el perfil real.
-
----
-
-## 4. Recordatorio para el agente
-
-Cuando el usuario indique que **terminó la revisión de casos establecidos**, preguntar:
-
-> «¿Retomamos el to-do de **set de datos**, **locale/idioma (EN + ES)** y **restaurar perfil**?»
+**Comando restore:** `pwsh tools/restore-location.ps1`
 
 ---
 
 ## Estado
 
-| Ítem | Prioridad | Cuándo |
+| Ítem | Prioridad | Estado |
 |------|-----------|--------|
-| Set de datos | Media | Después de casos establecidos |
-| Locale / idioma (EN, ES) | Media | Después de casos establecidos |
-| **Restaurar perfil** | **Alta** | Post casos Save; o antes si perfil quedó alterado |
-| Locale / idioma (otros) | Baja | Opcional, más adelante |
+| Set de datos | Media | ✅ Hecho |
+| Locale / idioma (EN, ES) | Media | ✅ Hecho (tests Explicit; matriz para registrar corridas) |
+| Restaurar perfil | Alta | ✅ Hecho |
+| Locale / idioma (otros) | Baja | Pendiente opcional |

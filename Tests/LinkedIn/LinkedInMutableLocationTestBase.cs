@@ -11,9 +11,9 @@ namespace cabaVsPBA.Tests.LinkedIn;
 /// Base para tests que pueden alterar Location en el formulario de experiencia.
 ///
 /// - Al inicio de CADA test: captura y conserva el valor de Location (<see cref="LocationAlInicioDelTest"/>).
-/// - Tras el test: si hubo Save exitoso, reabre el formulario y verifica que el valor
-///   persistido coincide con lo guardado ANTES de restaurar.
-/// - Al final: siempre deja el perfil con el valor que tenía al inicio del test.
+/// - Tras el test: reabre el formulario, verifica persistencia (si aplica) y
+///   <strong>siempre</strong> restaura el perfil al valor del inicio del test,
+///   incluso si la verificación de persistencia falla.
 /// </summary>
 public abstract class LinkedInMutableLocationTestBase : LinkedInTestBase
 {
@@ -44,6 +44,8 @@ public abstract class LinkedInMutableLocationTestBase : LinkedInTestBase
             return;
         }
 
+        Exception? falloPersistencia = null;
+
         try
         {
             var persistido = await ReleerLocationPersistidoAsync();
@@ -52,28 +54,51 @@ public abstract class LinkedInMutableLocationTestBase : LinkedInTestBase
 
             await CapturarAsync("valor-persistido-antes-de-restaurar");
 
-            if (GuardadoAlteroPerfil && ValorEsperadoTrasSave != null)
+            try
             {
-                Assert.That(LocationCoincide(persistido, ValorEsperadoTrasSave), Is.True,
-                    $"El valor GUARDADO no coincide con lo esperado. " +
-                    $"Esperado tras Save: '{ValorEsperadoTrasSave}', Persistido en perfil: '{persistido}'. " +
-                    "Consultar antes de reportar.");
+                VerificarPersistencia(persistido);
             }
-            else if (!GuardadoAlteroPerfil && !string.IsNullOrWhiteSpace(LocationAlInicioDelTest))
+            catch (Exception ex)
             {
-                Assert.That(LocationCoincide(persistido, LocationAlInicioDelTest), Is.True,
-                    $"El Save no debió alterar el perfil, pero Location cambió. " +
-                    $"Al inicio: '{LocationAlInicioDelTest}', Ahora: '{persistido}'. " +
-                    "Consultar antes de reportar.");
+                falloPersistencia = ex;
+                TestContext.Progress.WriteLine(
+                    $"[PERSISTENCIA] Fallo de verificación (se restaurará igual): {ex.Message}");
             }
-
-            await RestaurarLocationAlInicioDelTestAsync();
         }
-        catch (Exception ex)
+        finally
         {
-            TestContext.Progress.WriteLine(
-                $"[RESTORE] Error en verificación/restauración: {ex.Message}");
-            throw;
+            try
+            {
+                await RestaurarLocationAlInicioDelTestAsync();
+            }
+            catch (Exception ex)
+            {
+                TestContext.Progress.WriteLine($"[RESTORE] Error al restaurar: {ex.Message}");
+                throw;
+            }
+        }
+
+        if (falloPersistencia != null)
+        {
+            throw falloPersistencia;
+        }
+    }
+
+    private void VerificarPersistencia(string persistido)
+    {
+        if (GuardadoAlteroPerfil && ValorEsperadoTrasSave != null)
+        {
+            Assert.That(LocationCoincide(persistido, ValorEsperadoTrasSave), Is.True,
+                $"El valor GUARDADO no coincide con lo esperado. " +
+                $"Esperado tras Save: '{ValorEsperadoTrasSave}', Persistido en perfil: '{persistido}'. " +
+                "Consultar antes de reportar.");
+        }
+        else if (!GuardadoAlteroPerfil && !string.IsNullOrWhiteSpace(LocationAlInicioDelTest))
+        {
+            Assert.That(LocationCoincide(persistido, LocationAlInicioDelTest), Is.True,
+                $"El Save no debió alterar el perfil, pero Location cambió. " +
+                $"Al inicio: '{LocationAlInicioDelTest}', Ahora: '{persistido}'. " +
+                "Consultar antes de reportar.");
         }
     }
 
@@ -148,40 +173,5 @@ public abstract class LinkedInMutableLocationTestBase : LinkedInTestBase
 
         // Calidad de datos (PDF): debe persistir Autonomous City of Buenos Aires.
         ValorEsperadoTrasSave = EtiquetaCaba;
-    }
-
-    /// <summary>
-    /// Compara dos valores de Location (input + texto visible del contenedor del campo).
-    /// Vacío = sin texto relevante.
-    /// </summary>
-    protected static bool LocationCoincide(string actual, string esperado)
-    {
-        var a = NormalizarLocation(actual);
-        var e = NormalizarLocation(esperado);
-
-        if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(e))
-        {
-            return true;
-        }
-
-        if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(e))
-        {
-            return false;
-        }
-
-        return a.Contains(e, StringComparison.OrdinalIgnoreCase)
-               || e.Contains(a, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string NormalizarLocation(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return string.Empty;
-        }
-
-        return value.Trim()
-            .Replace("\n", " ", StringComparison.Ordinal)
-            .Replace("  ", " ", StringComparison.Ordinal);
     }
 }

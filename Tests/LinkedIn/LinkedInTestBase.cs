@@ -29,13 +29,18 @@ public abstract class LinkedInTestBase : PageTest
 
     private int _screenshotIndex;
 
+    /// <summary>Locale Playwright; tests Locale-Matrix pasan el valor como 1er argumento del TestCase.</summary>
+    protected virtual string PlaywrightLocale => ResolveLocaleFromTestContext() ?? "es-AR";
+
+    protected virtual string PlaywrightTimezone => "America/Argentina/Buenos_Aires";
+
     public override BrowserNewContextOptions ContextOptions()
     {
         var options = new BrowserNewContextOptions
         {
             ViewportSize = new ViewportSize { Width = 1920, Height = 1080 },
-            Locale = "es-AR",
-            TimezoneId = "America/Argentina/Buenos_Aires",
+            Locale = PlaywrightLocale,
+            TimezoneId = PlaywrightTimezone,
         };
 
         if (File.Exists(StorageStatePath))
@@ -52,6 +57,26 @@ public abstract class LinkedInTestBase : PageTest
 
         return options;
     }
+
+    private static string? ResolveLocaleFromTestContext()
+    {
+        var args = TestContext.CurrentContext.Test.Arguments;
+        if (args.Length > 0 && args[0] is string locale && !string.IsNullOrWhiteSpace(locale))
+        {
+            return locale;
+        }
+
+        return null;
+    }
+
+    /// <summary>Etiqueta CABA esperada según locale del contexto (EN vs ES).</summary>
+    protected static string EtiquetaCabaParaLocale(string locale) =>
+        locale.StartsWith("en", StringComparison.OrdinalIgnoreCase)
+            ? EtiquetaCaba
+            : "Ciudad Autónoma de Buenos Aires";
+
+    /// <summary>Etiqueta PBA en typeahead (LinkedIn usa inglés en sugerencias).</summary>
+    protected static string EtiquetaPbaParaLocale(string locale) => EtiquetaPba;
 
     [SetUp]
     public async Task IniciarBaselineAsync()
@@ -124,6 +149,9 @@ public abstract class LinkedInTestBase : PageTest
     /// </summary>
     protected const string EtiquetaCaba = "Autonomous City of Buenos Aires";
     protected const string EtiquetaPba = "Buenos Aires Province";
+
+    /// <summary>Location esperado del perfil de prueba (position 1864390597). Ver docs/test-data/profile-baseline.md.</summary>
+    protected const string ProfileBaselineLocation = "CABA, Argentina";
 
     /// <summary>
     /// Abre el formulario de experiencia y devuelve el locator del campo "Location".
@@ -349,6 +377,40 @@ public abstract class LinkedInTestBase : PageTest
 
         var textoError = Page.Locator("text=/required|obligatorio|please enter|please select|campo requerido/i");
         return await textoError.CountAsync() > 0 && await textoError.First.IsVisibleAsync();
+    }
+
+    /// <summary>
+    /// Compara dos valores de Location (input + texto visible del contenedor del campo).
+    /// </summary>
+    protected static bool LocationCoincide(string actual, string esperado)
+    {
+        var a = NormalizarLocation(actual);
+        var e = NormalizarLocation(esperado);
+
+        if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(e))
+        {
+            return true;
+        }
+
+        if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(e))
+        {
+            return false;
+        }
+
+        return a.Contains(e, StringComparison.OrdinalIgnoreCase)
+               || e.Contains(a, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizarLocation(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return value.Trim()
+            .Replace("\n", " ", StringComparison.Ordinal)
+            .Replace("  ", " ", StringComparison.Ordinal);
     }
 
     /// <summary>Restaura Location y guarda, para revertir un Save que alteró el perfil.</summary>

@@ -21,11 +21,16 @@ documentos con texto:
 
 ```
 docs/
-├── requirements/    # requerimientos de mejora (IMPROV-REQ-*)
-├── test-cases/      # casos de prueba (PDF/MD)
-├── test-data/       # datos de prueba centralizados (JSON)
-└── bugs/            # descripción y pasos de reproducción de cada bug
+├── COMANDOS-TESTS.md  # comandos dotnet test (TC, suites, paths)
+├── requirements/      # requerimientos de mejora (IMPROV-REQ-*)
+├── test-cases/        # casos de prueba (PDF/MD)
+├── test-data/         # datos de prueba centralizados (JSON)
+└── bugs/              # descripción y pasos de reproducción de cada bug
 ```
+
+## Comandos de ejecución
+
+Referencia completa: **[COMANDOS-TESTS.md](COMANDOS-TESTS.md)** — un TC, suites por categoría, sesión, restore, traces.
 
 ## Requerimientos de mejora
 

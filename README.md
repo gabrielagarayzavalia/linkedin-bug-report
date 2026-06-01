@@ -44,6 +44,8 @@ Ejecutar con la configuración de `.runsettings`:
 dotnet test --settings .runsettings
 ```
 
+**Comandos por TC, suites y paths:** ver [`docs/COMANDOS-TESTS.md`](docs/COMANDOS-TESTS.md).
+
 ## Ver el navegador (modo no headless)
 
 Editá `.runsettings` y poné:

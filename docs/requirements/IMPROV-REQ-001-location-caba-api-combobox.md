@@ -6,6 +6,9 @@
 **Estado:** Propuesto  
 **Relacionado:** [Bug CABA typeahead](../bugs/caba-location-typeahead/README.md)
 
+**Exportar Word/PDF:** `pwsh tools/export-requerimiento-argentina-api.ps1`  
+Genera: `Requerimiento = Argentina-API.docx` y `Requerimiento = Argentina-API.pdf` en esta carpeta.
+
 ---
 
 ## 1. Resumen ejecutivo

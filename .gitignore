@@ -1,6 +1,9 @@
 ## --- Reglas propias del proyecto ---
 ## Sesion/credenciales: NUNCA commitear (contiene cookies de sesion).
 Auth/state.json
+## Export Word/PDF generados (regenerar con tools/export-requerimiento-argentina-api.ps1)
+docs/requirements/*.docx
+docs/requirements/*.pdf
 ## Reportes de baseline, traces, screenshots y videos.
 TestResults/
 playwright-traces/

@@ -46,7 +46,10 @@ segmentación por ubicación.
 
 Propuesta formal para producto/ingeniería (API interna + combobox UI):
 
-- [`docs/requirements/IMPROV-REQ-001-location-caba-api-combobox.md`](../../requirements/IMPROV-REQ-001-location-caba-api-combobox.md)
+- Markdown: [`IMPROV-REQ-001-location-caba-api-combobox.md`](../../requirements/IMPROV-REQ-001-location-caba-api-combobox.md)
+- PDF: [`Requerimiento = Argentina-API.pdf`](../../requirements/Requerimiento%20=%20Argentina-API.pdf)
+- Word: [`Requerimiento = Argentina-API.docx`](../../requirements/Requerimiento%20=%20Argentina-API.docx)
+- Regenerar: `pwsh tools/export-requerimiento-argentina-api.ps1`
 
 ## Evidencia (baseline)
 

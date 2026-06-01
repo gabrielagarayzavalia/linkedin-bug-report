@@ -29,6 +29,6 @@ docs/
 
 ## Requerimientos de mejora
 
-| ID | Documento | Descripción |
-|----|-----------|-------------|
-| IMPROV-REQ-001 | [requirements/IMPROV-REQ-001-location-caba-api-combobox.md](requirements/IMPROV-REQ-001-location-caba-api-combobox.md) | API geo/typeahead + combobox Location (CABA vs PBA) |
+| ID | Documento | Export Word/PDF |
+|----|-----------|-----------------|
+| IMPROV-REQ-001 | [IMPROV-REQ-001-location-caba-api-combobox.md](requirements/IMPROV-REQ-001-location-caba-api-combobox.md) | [Requerimiento = Argentina-API.pdf](requirements/Requerimiento%20=%20Argentina-API.pdf) · regenerar: `pwsh tools/export-requerimiento-argentina-api.ps1` |

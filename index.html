@@ -762,6 +762,71 @@
     border-radius: 4px;
   }
 
+
+  /* ── VIDEO THUMBNAIL ── */
+  .video-thumb-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    overflow: hidden;
+  }
+
+  .video-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .video-thumb-wrap:hover .video-thumb { opacity: 0.6; }
+
+  .video-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .play-icon {
+    width: 72px;
+    height: 72px;
+    background: #CC0000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    transition: transform 0.2s, background 0.2s;
+    padding-left: 4px;
+  }
+
+  .video-thumb-wrap:hover .play-icon {
+    transform: scale(1.1);
+    background: #AA0000;
+  }
+
+  .play-text {
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
 </style>
 </head>
 <body>
@@ -975,11 +1040,23 @@
     <h2 class="section-title"><span class="num">06</span>Demostración del Bug — Video</h2>
     <p>Grabación de pantalla que documenta el comportamiento incorrecto de LinkedIn al buscar ubicaciones de la Ciudad Autónoma de Buenos Aires.</p>
     <div class="video-wrap">
-      <video controls controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture>
-        <source src="Video_Project_3.mp4" type="video/mp4">
-        Tu navegador no soporta la reproducción de video HTML5.
-      </video>
-      <div class="video-caption">📹 Evidencia visual — Bug LinkedIn CABA vs PBA</div>
+      <div class="video-thumb-wrap">
+        <img
+          src="https://img.youtube.com/vi/HVX3aji5JkI/maxresdefault.jpg"
+          alt="LinkedIn Bug — CABA vs Provincia de Buenos Aires"
+          class="video-thumb"
+          onerror="this.src='https://img.youtube.com/vi/HVX3aji5JkI/hqdefault.jpg'"
+        >
+        <a href="https://www.youtube.com/watch?v=HVX3aji5JkI"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="video-play-btn"
+           onclick="return true;">
+          <span class="play-icon">▶</span>
+          <span class="play-text">Ver video en YouTube</span>
+        </a>
+      </div>
+      <div class="video-caption">📹 Evidencia visual — Bug LinkedIn CABA vs PBA · Clic para ver en YouTube</div>
     </div>
   </div>
 

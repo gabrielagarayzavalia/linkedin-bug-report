@@ -17,10 +17,18 @@ documentos con texto:
 
 3. **Adjuntá capturas** de los documentos como imágenes en el chat.
 
-## Estructura sugerida
+## Estructura
 
 ```
 docs/
-├── test-cases/      # tus casos de prueba (PDF/MD)
+├── requirements/    # requerimientos de mejora (IMPROV-REQ-*)
+├── test-cases/      # casos de prueba (PDF/MD)
+├── test-data/       # datos de prueba centralizados (JSON)
 └── bugs/            # descripción y pasos de reproducción de cada bug
 ```
+
+## Requerimientos de mejora
+
+| ID | Documento | Descripción |
+|----|-----------|-------------|
+| IMPROV-REQ-001 | [requirements/IMPROV-REQ-001-location-caba-api-combobox.md](requirements/IMPROV-REQ-001-location-caba-api-combobox.md) | API geo/typeahead + combobox Location (CABA vs PBA) |

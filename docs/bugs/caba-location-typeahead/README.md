@@ -42,6 +42,12 @@ Como el campo dejó de ser restrictivo, el usuario puede escribir el texto libre
 pero la ubicación **no queda normalizada**, lo que afecta búsquedas, filtros y
 segmentación por ubicación.
 
+## Requerimiento de mejora
+
+Propuesta formal para producto/ingeniería (API interna + combobox UI):
+
+- [`docs/requirements/IMPROV-REQ-001-location-caba-api-combobox.md`](../../requirements/IMPROV-REQ-001-location-caba-api-combobox.md)
+
 ## Evidencia (baseline)
 
 Formulario "Edit experience" cargado:

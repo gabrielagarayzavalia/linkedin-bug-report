@@ -50,8 +50,27 @@ No correr suites completas salvo que el usuario lo pida explícitamente.
 | TC-N01..N06 | `TC_N01_*` … `TC_N06_*` | Negative | Consultar si falla |
 | TC-V01 | `TC_V01_SaveConLocationVacio_RespetaObligatoriedad` | Save-Validation | PASS (Location no requerido) |
 | TC-P01-Save | `TC_P01_Save_NombreCompleto_VerificarPersistido` | Save-Persistence | Consultar tras ejecutar |
+| Locale-Matrix | `Locale_*` | Locale-Matrix | L01/P01 FAIL datos; PBA01 PASS |
 
-Documentación QA: `docs/TestCases_TestData_LinkedIn_CABA.pdf`, `docs/test-cases/INDEX.md`.
+Documentación QA: `docs/TestCases_TestData_LinkedIn_CABA.pdf`, `docs/test-cases/INDEX.md`, `docs/test-data/location-test-data.json`.
+
+## Locale-Matrix (EN + ES)
+
+```powershell
+dotnet test --filter "TestCategory=Locale-Matrix" --settings .runsettings
+```
+
+- Locale Playwright: 1er argumento del `TestCase` (`es-AR`, `en-US`).
+- Matriz y resultados: `docs/test-cases/locale-matrix.md`.
+- Etiquetas: `EtiquetaCabaParaLocale(locale)` / `EtiquetaPbaParaLocale(locale)` en `LinkedInTestBase`.
+
+## Restaurar perfil (baseline)
+
+```powershell
+pwsh tools/restore-location.ps1
+```
+
+Baseline: `CABA, Argentina` — ver `docs/test-data/profile-baseline.md`. TearDown de `LinkedInMutableLocationTestBase` restaura siempre, aunque falle la assert de persistencia.
 
 ## Documentación por TC (obligatorio)
 
@@ -134,6 +153,5 @@ Evidencia versionada del bug: `docs/bugs/caba-location-typeahead/evidence/`.
 
 ## Pendientes conocidos (consultar con usuario)
 
-- **TC-N01**, **TC-N05**: fallaron en corrida inicial; requieren confirmación de hipótesis antes de ajustar assertions o reportar bug.
 - **Reporte de riesgos R01–R15**: no iniciar hasta que el usuario lo pida.
-- **Post casos establecidos:** recordar `docs/todo/BACKLOG.md` — set de datos, locale/idioma (EN y ES), **restaurar perfil**.
+- **Locale opcional:** otros locales / perfil Primary language English dedicado (`docs/todo/BACKLOG.md` §2 futuro).

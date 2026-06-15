@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bug Report — LinkedIn CABA vs PBA</title>
+<title>Incident Report — LinkedIn CABA vs PBA</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -49,13 +49,13 @@
 
   /* ── WATERMARK ── */
   html[lang="en"] body::before {
-    content: "CONFIDENTIAL · READ ONLY · CONFIDENTIAL · READ ONLY · CONFIDENTIAL · READ ONLY · ";
+    content: "READ ONLY · READ ONLY · READ ONLY · READ ONLY · READ ONLY · READ ONLY · ";
   }
   html[lang="es"] body::before {
-    content: "CONFIDENCIAL · SOLO LECTURA · CONFIDENCIAL · SOLO LECTURA · CONFIDENCIAL · SOLO LECTURA · ";
+    content: "SOLO LECTURA · SOLO LECTURA · SOLO LECTURA · SOLO LECTURA · SOLO LECTURA · SOLO LECTURA · ";
   }
   body::before {
-    content: "CONFIDENTIAL · READ ONLY · CONFIDENTIAL · READ ONLY · CONFIDENTIAL · READ ONLY · ";
+    content: "READ ONLY · READ ONLY · READ ONLY · READ ONLY · READ ONLY · READ ONLY · ";
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     display: flex;
@@ -81,7 +81,7 @@
   header {
     background: #FFFFFF;
     border-bottom: 2px solid #CC0000;
-    padding: 60px 40px 50px;
+    padding: 60px 120px 50px 40px;
     position: relative;
     overflow: hidden;
   }
@@ -108,10 +108,37 @@
     letter-spacing: 3px;
     padding: 6px 16px;
     border-radius: 2px;
+    margin-bottom: 0;
+  }
+
+  .header-badge::before { content: '🔴'; font-size: 10px; }
+
+  .header-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
     margin-bottom: 24px;
   }
 
-  .header-badge::before { content: '🔒'; font-size: 10px; }
+  .header-readonly {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: rgba(0, 0, 0, 0.02);
+    padding: 6px 14px;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-readonly::before { content: '🔒'; font-size: 10px; }
 
   header h1 {
     font-family: 'DM Serif Display', serif;
@@ -125,7 +152,7 @@
 
   .header-sub {
     font-size: 15px;
-    color: rgba(255,255,255,0.85);
+    color: #444444;
     margin-bottom: 32px;
   }
 
@@ -175,6 +202,7 @@
   .section:nth-child(4) { animation-delay: 0.4s; }
   .section:nth-child(5) { animation-delay: 0.5s; }
   .section:nth-child(6) { animation-delay: 0.6s; }
+  .section:nth-child(7) { animation-delay: 0.7s; }
 
   @keyframes fadeUp {
     to { opacity: 1; transform: translateY(0); }
@@ -201,6 +229,12 @@
     border: 1px solid rgba(204,0,0,0.4);
     padding: 3px 10px;
     border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .section-title > span:not(.num) {
+    flex: 1;
+    min-width: 0;
   }
 
   .section-subtitle {
@@ -453,17 +487,17 @@
 
   /* ── FOOTER ── */
   footer {
-    background: rgba(204,0,0,0.06);
-    border-top: 2px solid #CC0000;
-    padding: 30px 40px;
+    background: rgba(204,0,0,0.04);
+    border-top: 1px solid rgba(204,0,0,0.2);
+    padding: 20px 40px;
     text-align: center;
   }
 
   footer p {
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: rgba(0,0,0,0.3);
-    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: rgba(0,0,0,0.45);
+    font-weight: 400;
     margin: 0;
   }
 
@@ -487,7 +521,7 @@
 
   @media (max-width: 640px) {
     .container { padding: 40px 20px; }
-    header { padding: 40px 20px 36px; }
+    header { padding: 40px 100px 36px 20px; }
     .diff-grid, .sub-grid { grid-template-columns: 1fr; }
     .version-row { grid-template-columns: 80px 1fr; }
   }
@@ -539,6 +573,38 @@
   .req-meta-item span:last-child {
     font-size: 13px;
     color: #444444;
+  }
+
+  .prod-url {
+    margin: 16px 0 20px;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .prod-url strong {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #CC0000;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .prod-url-link {
+    color: #1A5276;
+    word-break: break-all;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
   }
 
 
@@ -870,17 +936,24 @@
 
 <!-- HEADER -->
 <header>
-  <div class="header-badge" data-i18n="header.badge">READ ONLY · VERSION 2.0</div>
-  <h1 data-i18n="header.title" data-i18n-html="1">Bug Report — LinkedIn<br><span>CABA ≠ Province of Buenos Aires</span></h1>
-  <p class="header-sub" data-i18n="header.sub">Data defect with massive impact on Argentine users</p>
+  <div class="header-top-row">
+    <div class="header-badge" data-i18n="header.badge">PRODUCTION INCIDENT · LIVE ON LINKEDIN</div>
+    <span class="header-readonly" data-i18n="header.readonly">READ ONLY</span>
+  </div>
+  <h1 data-i18n="header.title" data-i18n-html="1">Incident Report — LinkedIn<br><span>CABA ≠ Province of Buenos Aires</span></h1>
+  <p class="header-sub" data-i18n="header.sub">Active production defect on linkedin.com — CABA misclassified as Province of Buenos Aires</p>
   <div class="header-meta">
     <div class="meta-item">
       <span class="meta-label" data-i18n="meta.platform">Platform</span>
       <span class="meta-value">LinkedIn</span>
     </div>
     <div class="meta-item">
+      <span class="meta-label" data-i18n="meta.env">Environment</span>
+      <span class="meta-value" data-i18n="meta.env.val">Production (linkedin.com)</span>
+    </div>
+    <div class="meta-item">
       <span class="meta-label" data-i18n="meta.type">Type</span>
-      <span class="meta-value" data-i18n="meta.type.val">Data Defect</span>
+      <span class="meta-value" data-i18n="meta.type.val">Production Data Defect</span>
     </div>
     <div class="meta-item">
       <span class="meta-label" data-i18n="meta.status">Status</span>
@@ -892,7 +965,7 @@
     </div>
     <div class="meta-item">
       <span class="meta-label" data-i18n="meta.author">Author</span>
-      <span class="meta-value" data-i18n="meta.author.val">QA Senior Analyst — 25+ years of experience</span>
+      <span class="meta-value" data-i18n="meta.author.val">Gabriela Garay Zavalia · QA Senior Analyst — 25+ years of experience</span>
     </div>
   </div>
 </header>
@@ -901,24 +974,61 @@
   <aside class="sidebar">
     <div class="sidebar-label" data-i18n="nav.index">Index</div>
     <nav id="sidebar-nav">
-      <a href="#sec-01" class="active"><span class="nav-num">01</span><span data-i18n="nav.s01">Defect Description</span></a>
-      <a href="#sec-02"><span class="nav-num">02</span><span data-i18n="nav.s02">Operational Risks</span></a>
-      <a href="#sec-03"><span class="nav-num">03</span><span data-i18n="nav.s03">Commercial Risks</span></a>
-      <a href="#sec-04"><span class="nav-num">04</span><span data-i18n="nav.s04">Consolidated Register</span></a>
+      <a href="#sec-01" class="active"><span class="nav-num">01</span><span data-i18n="nav.s01">Production Incident</span></a>
+      <a href="#sec-02"><span class="nav-num">02</span><span data-i18n="nav.s02">Error Replication</span></a>
+      <a href="#sec-03"><span class="nav-num">03</span><span data-i18n="nav.s03">Impact</span></a>
+      <a href="#sec-04"><span class="nav-num">04</span><span data-i18n="nav.s04">Dropdown Standard</span></a>
       <a href="#sec-05"><span class="nav-num">05</span><span data-i18n="nav.s05">Expected Fix</span></a>
-      <a href="#sec-06"><span class="nav-num">06</span><span data-i18n="nav.s06">Bug Video</span></a>
-      <a href="#sec-07"><span class="nav-num">07</span><span data-i18n="nav.s07">API Requirements</span></a>
-      <a href="#sec-08"><span class="nav-num">08</span><span data-i18n="nav.s08">Test Cases</span></a>
+      <a href="#sec-06"><span class="nav-num">06</span><span data-i18n="nav.s06">API Requirements</span></a>
+      <a href="#sec-07"><span class="nav-num">07</span><span data-i18n="nav.s07">Test Cases</span></a>
     </nav>
   </aside>
   <div class="main-content">
 <div class="container">
 
-  <!-- 1. DEFECT DESCRIPTION -->
+<!-- VIDEO -->
   <div class="section" id="sec-01">
-    <h2 class="section-title"><span class="num">01</span><span data-i18n="sec01.title">Defect Description</span></h2>
+    <h2 class="section-title"><span class="num">01</span><span data-i18n="sec01.title">Production Incident — Live on LinkedIn</span></h2>
+    <div class="callout warning" style="margin-bottom:20px"><div class="callout-label" data-i18n="sec01.prod.label">🔴 Production Environment</div><p data-i18n="sec01.prod.p">This is not a test environment defect. The behavior shown occurs today on <strong>linkedin.com</strong> in production, affecting real user profiles and recruiter searches.</p></div>
+    <p class="prod-url">
+      <strong data-i18n="sec01.profile.url.label">Production entry point — profile intro</strong>
+      <code class="prod-url-link">https://www.linkedin.com/in/&lt;userName&gt;/edit/intro/</code>
+    </p>
+    <p data-i18n="sec06.p">Screen recording documenting LinkedIn incorrect behavior when searching locations in the Autonomous City of Buenos Aires.</p>
+    <div class="video-wrap">
+      <div class="video-thumb-wrap">
+        <img
+          src="https://img.youtube.com/vi/HVX3aji5JkI/maxresdefault.jpg"
+          alt="LinkedIn Bug — CABA vs Province of Buenos Aires"
+          class="video-thumb"
+          onerror="this.src='https://img.youtube.com/vi/HVX3aji5JkI/hqdefault.jpg'"
+        >
+        <a href="https://www.youtube.com/watch?v=HVX3aji5JkI"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="video-play-btn"
+           onclick="return true;">
+          <span class="play-icon">▶</span>
+          <span class="play-text" data-i18n="sec06.play">Watch on YouTube</span>
+        </a>
+      </div>
+      <div class="video-caption" data-i18n="sec06.caption">📹 Visual evidence — LinkedIn CABA vs PBA bug · Click to watch on YouTube</div>
+    </div>
+  </div>
+
+
+<!-- 1. DEFECT DESCRIPTION -->
+  <div class="section" id="sec-02">
+    <h2 class="section-title"><span class="num">02</span><span data-i18n="sec02.main.title">Error Replication</span></h2>
     <p data-i18n="sec01.p1" data-i18n-html="1">LinkedIn does not recognize the <strong>Autonomous City of Buenos Aires (CABA)</strong> as an independent geographic entity. The platform categorizes CABA neighborhoods and communes under the &quot;Province of Buenos Aires&quot;, even though these are politically and administratively distinct jurisdictions.</p>
     <p data-i18n="sec01.p2" data-i18n-html="1"><strong>Documented example:</strong> the Liniers neighborhood (Commune 9 of CABA) is labeled as &quot;Liniers, Commune 9, Province of Buenos Aires&quot;.</p>
+    <h3 class="section-subtitle" data-i18n="sec02.replicate.sub">How to Reproduce on Production</h3>
+    <ol data-i18n="sec02.replicate.steps" data-i18n-html="1" style="margin:0 0 20px 20px;color:#333;font-size:14px;line-height:1.8">
+      <li>Sign in to <strong>linkedin.com</strong> with any account.</li>
+      <li>Open <strong>Profile → Add experience</strong> (or edit an existing one).</li>
+      <li>In the <strong>Location</strong> typeahead field, type a CABA location (e.g. <em>Palermo</em>, <em>Comuna 9</em>, or <em>Ciudad Autónoma de Buenos Aires</em>).</li>
+      <li>Observe suggestions and saved value: CABA entities appear under <strong>Province of Buenos Aires</strong> or persist as free text.</li>
+    </ol>
     <div class="diff-grid">
       <div class="diff-card caba">
         <h4>🏙️ CABA</h4>
@@ -935,9 +1045,17 @@
     </div>
   </div>
 
-  <!-- 2. OPERATIONAL RISKS -->
-  <div class="section" id="sec-02">
-    <h2 class="section-title"><span class="num">02</span><span data-i18n="sec02.title">Operational and Geographic Risks</span></h2>
+
+  <!-- 3. IMPACT -->
+  <div class="section" id="sec-03">
+    <h2 class="section-title"><span class="num">03</span><span data-i18n="sec03.impact.title">Where This Error Impacts</span></h2>
+    <p data-i18n="sec03.impact.intro">Because the defect lives in production geo data and the Location typeahead, its impact spans user profiles, recruiter filters, Premium experience, and platform revenue.</p>
+    <p class="prod-url">
+      <strong data-i18n="sec03.experience.url.label">Production entry point — experience location</strong>
+      <code class="prod-url-link">https://www.linkedin.com/in/&lt;userName&gt;/details/experience/edit/</code>
+    </p>
+    <h3 class="section-subtitle" data-i18n="sec02.title">Operational and Geographic Risks</h3>
+<!-- 2. OPERATIONAL RISKS -->
     <div class="risk-table-wrap">
       <table>
         <thead>
@@ -962,11 +1080,8 @@
         </tbody>
       </table>
     </div>
-  </div>
-
-  <!-- 3. COMMERCIAL RISKS -->
-  <div class="section" id="sec-03">
-    <h2 class="section-title"><span class="num">03</span><span data-i18n="sec03.title">Commercial and User Experience Risks</span></h2>
+<!-- 3. COMMERCIAL RISKS -->
+    <h3 class="section-subtitle" data-i18n="sec03.title">Commercial and User Experience Risks</h3>
 
     <h3 class="section-subtitle" data-i18n="sec03.s31">3.1 — Impact on Premium Users</h3>
     <p data-i18n="sec03.s31.p">Premium users invest money monthly or annually to maximize profile visibility and quality. The defect prevents correctly completing one of the most basic and critical fields: location.</p>
@@ -1015,11 +1130,8 @@
         </ul>
       </div>
     </div>
-  </div>
-
-  <!-- 4. CONSOLIDATED REGISTER -->
-  <div class="section" id="sec-04">
-    <h2 class="section-title"><span class="num">04</span><span data-i18n="sec04.title">Consolidated Risk Register — v2.0</span></h2>
+<!-- 4. CONSOLIDATED REGISTER -->
+    <h3 class="section-subtitle" data-i18n="sec04.title">Consolidated Risk Register — v2.0</h3>
     <div class="risk-table-wrap">
       <table>
         <thead>
@@ -1054,7 +1166,35 @@
     <p style="font-size:12px; color:rgba(0,0,0,0.45); margin-top:8px; font-style:italic;" data-i18n="sec04.note">★ Highlighted rows = risks added in v2.0</p>
   </div>
 
-  <!-- 5. EXPECTED FIX -->
+  <!-- 4. DROPDOWN STANDARDIZATION -->
+  <div class="section" id="sec-04">
+    <h2 class="section-title"><span class="num">04</span><span data-i18n="sec04.dropdown.title">Dropdown / Typeahead Standardization</span></h2>
+    <p data-i18n="sec04.dropdown.intro">The Location field must behave as an accessible combobox: users select a <strong>canonical geographic entity</strong> from the listbox — not free text that mirrors what they typed.</p>
+    <div class="callout">
+      <div class="callout-label" data-i18n="sec04.dropdown.pattern.label">📋 Required Pattern</div>
+      <p data-i18n="sec04.dropdown.pattern.p">WAI-ARIA Combobox with Listbox Autocomplete: <code>role="combobox"</code>, associated listbox, <code>aria-expanded</code>, keyboard navigation, and selection of an item with non-null <code>entityId</code> before Save.</p>
+    </div>
+    <div class="risk-table-wrap">
+      <table>
+        <thead><tr><th data-i18n="sec04.dropdown.th.practice">Practice</th><th data-i18n="sec04.dropdown.th.detail">Detail</th></tr></thead>
+        <tbody data-i18n="sec04.dropdown.tbody" data-i18n-html="1">
+          <tr><td><strong>Canonical selection</strong></td><td>Every selectable suggestion must include a mandatory <code>entityId</code> — not an echo of user input.</td></tr>
+          <tr><td><strong>Disambiguation</strong></td><td>Ambiguous queries (e.g. "Buenos Aires") must show separate CABA and PBA options with distinct labels.</td></tr>
+          <tr><td><strong>Persistence</strong></td><td>On Save, store the canonical <code>entityId</code> and derived display name — not Spanish free text alone.</td></tr>
+          <tr><td><strong>Keyboard / a11y</strong></td><td>Navigate suggestions with arrow keys; select with Enter; full WAI-ARIA support.</td></tr>
+          <tr><td><strong>Anti-pattern</strong></td><td>Prohibit a single suggestion that duplicates typed text without <code>entityId</code> (observed in TC-P01).</td></tr>
+          <tr><td><strong>Hybrid mode</strong></td><td>If free text is allowed when Location is optional, mark it visually as non-canonical (<code>isCanonical: false</code>).</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul data-i18n="sec04.dropdown.ul" data-i18n-html="1">
+      <li><strong>Expected labels:</strong> CABA → <em>Autonomous City of Buenos Aires</em>; PBA → <em>Buenos Aires Province</em>.</li>
+      <li><strong>Localized display:</strong> Respect profile language and browser locale without changing jurisdiction.</li>
+      <li><strong>Regression:</strong> PBA localities that today resolve correctly must keep working after the combobox fix.</li>
+    </ul>
+  </div>
+
+<!-- 5. EXPECTED FIX -->
   <div class="section" id="sec-05">
     <h2 class="section-title"><span class="num">05</span><span data-i18n="sec05.title">Expected Fix</span></h2>
     <p data-i18n="sec05.p">LinkedIn must add the Autonomous City of Buenos Aires as an independent geographic entity in its database, separate from the Province of Buenos Aires, with its 48 neighborhoods and 15 communes correctly classified.</p>
@@ -1070,34 +1210,10 @@
     </div>
   </div>
 
-  <!-- VIDEO -->
-  <div class="section" id="sec-06">
-    <h2 class="section-title"><span class="num">06</span><span data-i18n="sec06.title">Bug Demonstration — Video</span></h2>
-    <p data-i18n="sec06.p">Screen recording documenting LinkedIn incorrect behavior when searching locations in the Autonomous City of Buenos Aires.</p>
-    <div class="video-wrap">
-      <div class="video-thumb-wrap">
-        <img
-          src="https://img.youtube.com/vi/HVX3aji5JkI/maxresdefault.jpg"
-          alt="LinkedIn Bug — CABA vs Province of Buenos Aires"
-          class="video-thumb"
-          onerror="this.src='https://img.youtube.com/vi/HVX3aji5JkI/hqdefault.jpg'"
-        >
-        <a href="https://www.youtube.com/watch?v=HVX3aji5JkI"
-           target="_blank"
-           rel="noopener noreferrer"
-           class="video-play-btn"
-           onclick="return true;">
-          <span class="play-icon">▶</span>
-          <span class="play-text" data-i18n="sec06.play">Watch on YouTube</span>
-        </a>
-      </div>
-      <div class="video-caption" data-i18n="sec06.caption">📹 Visual evidence — LinkedIn CABA vs PBA bug · Click to watch on YouTube</div>
-    </div>
-  </div>
 
-  <!-- API REQUIREMENTS -->
-  <div class="section" id="sec-07">
-    <h2 class="section-title"><span class="num">07</span><span data-i18n="sec07.title">Requirements Document — Argentina API v1</span></h2>
+<!-- API REQUIREMENTS -->
+  <div class="section" id="sec-06">
+    <h2 class="section-title"><span class="num">06</span><span data-i18n="sec07.title">Requirements Document — Argentina API v1</span></h2>
     <p data-i18n="sec07.intro">Formal technical specification for LinkedIn product and engineering teams to fix the geolocation API defect.</p>
 
     <div class="callout">
@@ -1186,11 +1302,10 @@
       <div class="req-meta-item"><span class="meta-label" data-i18n="sec07.meta.date">Date</span><span data-i18n="sec07.meta.date.val">June 2026</span></div>
       <div class="req-meta-item"><span class="meta-label" data-i18n="sec07.meta.ref">Reference</span><span>Argentina Georef API — datos.gob.ar</span></div>
     </div>
-  </div></div>
-
-  <!-- 08. TEST CASES -->
-  <div class="section" id="sec-08">
-    <h2 class="section-title"><span class="num">08</span><span data-i18n="sec08.title">Test Cases &amp; Test Data Set</span></h2>
+  </div>
+<!-- 08. TEST CASES -->
+  <div class="section" id="sec-07">
+    <h2 class="section-title"><span class="num">07</span><span data-i18n="sec08.title">Test Cases &amp; Test Data Set</span></h2>
     <p data-i18n="sec08.intro">Test cases documented with defect evidence, including positive, boundary, and Province of Buenos Aires cases, plus the test data set and validated business rules.</p>
 
     <div class="tc-tabs">
@@ -1425,11 +1540,13 @@
     </div>
   </div>
 
+
   </div>
+</div>
 </div>
 
 <footer>
-  <p data-i18n="footer">🔒 READ-ONLY DOCUMENT · CONFIDENTIAL · QA SENIOR ANALYST · MAY 2026</p>
+  <p data-i18n="footer">Gabriela Garay Zavalia · QA Senior Analyst · May 2026</p>
 </footer>
 
 <script>
@@ -1547,8 +1664,8 @@
         btn.setAttribute('aria-label', lang === 'en' ? 'Switch language to Spanish' : 'Cambiar idioma a inglés');
       }
       document.title = lang === 'es'
-        ? 'Reporte de Bug — LinkedIn CABA vs PBA'
-        : 'Bug Report — LinkedIn CABA vs PBA';
+        ? 'Reporte de Incidente — LinkedIn CABA vs PBA'
+        : 'Incident Report — LinkedIn CABA vs PBA';
       currentLang = lang;
       try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) { /* ignore */ }
     }

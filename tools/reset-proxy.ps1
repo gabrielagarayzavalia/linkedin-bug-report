@@ -8,6 +8,7 @@
 # Solo modifica HKCU (tu usuario): NO requiere permisos de administrador.
 #
 # Uso:  pwsh tools/reset-proxy.ps1
+# Escritorio (sin depender del repo): pwsh tools/build-reset-proxy-desktop.ps1
 
 $ErrorActionPreference = "Stop"
 $is = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"

@@ -36,7 +36,7 @@ if (-not $pwsh) {
 $bat = @"
 @echo off
 title Reset Proxy
-"$pwsh" -NoProfile -ExecutionPolicy Bypass -File "%USERPROFILE%\Desktop\Reset-Proxy\reset-proxy.ps1"
+"$pwsh" -NoProfile -ExecutionPolicy Bypass -File "%~dp0Reset-Proxy\reset-proxy.ps1"
 echo.
 pause
 "@
